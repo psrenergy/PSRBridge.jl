@@ -87,7 +87,7 @@ function test_all()
     files = length(PSRBridge.files(cache))
     println("Cache size: $files files with $file_size bytes")
 
-    @timeit "finalize!" begin 
+    @timeit "finalize!" begin
         finalize!(inputs)
         finalize!(cache)
     end

@@ -1,9 +1,9 @@
-macro build_collection(expression)
+macro collection(expression)
     evaluated = eval(expression)
-    fields = fieldnames(evaluated)
-    name = nameof(evaluated)
 
+    name = nameof(evaluated)
     name_snakecase = convert(PascalCase, SnakeCase, string(name))
+    fields = fieldnames(evaluated)
 
     collection_functions = [
         quote

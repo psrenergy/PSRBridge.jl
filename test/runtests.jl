@@ -10,83 +10,7 @@ using TimerOutputs
 const PSRI = PSRClassesInterface
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 
-# @kwdef mutable struct BidBasedInputs <: AbstractInputs
-#     # db::PSRDatabaseSQLite.DatabaseSQLite
-#     # args::Args
-#     thermal_plant::ThermalPlant = ThermalPlant()
-# end
-
-# function load!(hydro_plant::HydroPlant, inputs)
-#     hydro_plant.label = PSRI.get_parms(inputs.db, "HydroPlant", "label")
-#     thermal_plant.max_ramp_up = PSRI.get_parms(inputs.db, "ThermalPlant", "max_ramp_up")
-
-#     load_time_series_in_db!(hydro_plant, inputs.db, initial_date_time(inputs))
-
-#     hydro_plant.inflow_file = PSRDatabaseSQLite.read_time_series_file(inputs.db, "HydroPlant", "inflow")
-
-#     return nothing
-# end
-
-# function load!(data::ThermalPlant; stage::Integer)
-
-#     return nothing
-# end
-
-# function initialize!(data::ThermalPlant)
-#     size = length(data.d1)
-
-#     data.label = [randstring(10) for _ in 1:size]
-#     data.existing = rand(Bool, size)
-#     data.max_startups = rand(Int, size)
-#     data.max_generation = rand(Float64, size)
-
-#     return nothing
-# end
-
-# function load!(data::ThermalPlant; stage::Integer)
-#     size = length(data.d1)
-
-#     data.label = [randstring(10) for _ in 1:size]
-#     data.existing = rand(Bool, size)
-#     data.max_startups = rand(Int, size)
-#     data.max_generation = rand(Float64, size)
-
-#     return nothing
-# end
-
-# thermal_plant_label(collection::ThermalPlant, i::Integer) = collection.label[i]
-
-# function load!(hydro_plant::HydroPlant, inputs)
-#     hydro_plant.label = PSRI.get_parms(inputs.db, "HydroPlant", "label")
-
-#     load_time_series_in_db!(hydro_plant, inputs.db, initial_date_time(inputs))
-
-#     hydro_plant.inflow_file = PSRDatabaseSQLite.read_time_series_file(inputs.db, "HydroPlant", "inflow")
-
-#     return nothing
-# end
-
-# function load_time_series_in_db!(hydro_plant::HydroPlant, db::DatabaseSQLite, stage_date_time::DateTime)
-#     hydro_plant.existing = PSRDatabaseSQLite.read_time_series_row(db, "HydroPlant", "existing"; date_time = stage_date_time)
-
-#     return nothing
-# end
-
-# hydro_plant_min_generation(inputs, idx::Int) = inputs.collections.hydro_plant.min_generation[idx]
-
-# function add_hydro_plant!(db::DatabaseSQLite; kwargs...)
-#     PSRI.create_element!(db, "HydroPlant"; kwargs...)
-#     return nothing
-# end
-
-# function update_hydro_plant!(db::DatabaseSQLite, label::String; kwargs...)
-#     for (attribute, value) in kwargs
-#         PSRI.set_parm!(db, "HydroPlant", string(attribute), label, value)
-#     end
-#     return nothing
-# end
-
-@build_collection @kwdef mutable struct ThermalPlant <: AbstractCollection
+@collection @kwdef mutable struct ThermalPlant <: AbstractCollection
     id::String = "ThermalPlant"
     label::StaticData{String} = "label"
     has_commitment::StaticData{Bool} = "has_commitment"
@@ -100,7 +24,33 @@ const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
     startup_cost::TimeSeriesData{Float64} = "startup_cost"
 end
 
+@collection @kwdef mutable struct HydroPlant <: AbstractCollection
+    id::String = "HydroPlant"
+    label::StaticData{String} = "label"
+    initial_volume::StaticData{Float64} = "initial_volume"
+    has_commitment::StaticData{Bool} = "has_commitment"
+    non_controllable_spillage::StaticData{Bool} = "non_controllable_spillage"
+
+    existing::TimeSeriesData{Float64} = "existing"
+    production_factor::TimeSeriesData{Float64} = "production_factor"
+    min_generation::TimeSeriesData{Float64} = "min_generation"
+    max_generation::TimeSeriesData{Float64} = "max_generation"
+    min_turbining::TimeSeriesData{Float64} = "min_turbining"
+    max_turbining::TimeSeriesData{Float64} = "max_turbining"
+    min_volume::TimeSeriesData{Float64} = "min_volume"
+    max_volume::TimeSeriesData{Float64} = "max_volume"
+    min_outflow::TimeSeriesData{Float64} = "min_outflow"
+    om_cost::TimeSeriesData{Float64} = "om_cost"
+
+    bus_index::MapData = ("Bus", "id")
+    agent_index::MapData = ("Agent", "id")
+    gauging_station_index::MapData = ("GaugingStation", "id")
+    turbine_to_index::MapData = ("HydroPlant", "turbine_to")
+    spill_to_index::MapData = ("HydroPlant", "spill_to")
+end
+
 @kwdef mutable struct Inputs <: AbstractInputs
+    hydro_plant::HydroPlant = HydroPlant()
     thermal_plant::ThermalPlant = ThermalPlant()
 end
 
@@ -132,6 +82,10 @@ function test_all()
             end
         end
     end
+
+    file_size = PSRBridge.file_size(cache)
+    files = length(PSRBridge.files(cache))
+    println("Cache size: $files files with $file_size bytes")
 
     @timeit "finalize!" begin 
         finalize!(inputs)

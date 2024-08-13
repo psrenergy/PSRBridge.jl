@@ -1,32 +1,34 @@
-@kwdef mutable struct MapData{T} <: AbstractData
+@kwdef mutable struct MapData <: AbstractData
+    collection_to::String
     id::String
-    data::Vector{T} = []
+    data::Vector{Int} = []
 end
 
-function Base.convert(::Type{MapData{T}}, id::AbstractString) where {T}
-    return MapData{T}(id = id)
+function Base.convert(::Type{MapData}, tuple::Tuple{String, String})
+    return MapData(collection_to = tuple[1], id = tuple[2])
 end
 
-function Base.getindex(parameter::MapData{T}, i::Integer) where {T}
+function Base.getindex(parameter::MapData, i::Integer)
     return parameter.data[i]
 end
 
-function Base.length(parameter::MapData{T}) where {T}
+function Base.length(parameter::MapData)
     return length(parameter.data)
 end
 
-function Base.isempty(parameter::MapData{T}) where {T}
+function Base.isempty(parameter::MapData)
     return isempty(parameter.data)
 end
 
-function initialize!(parameter::MapData{T}, collection::AbstractCollection, db::DatabaseSQLite; kwargs...) where {T}
+function initialize!(parameter::MapData, collection::AbstractCollection, db::DatabaseSQLite; kwargs...)
+    parameter.data = PSRI.get_map(db, collection.id, parameter.collection_to, parameter.id)
     return nothing
 end
 
-function update!(parameter::MapData{T}, collection::AbstractCollection, db::DatabaseSQLite; kwargs...) where {T}
+function update!(parameter::MapData, collection::AbstractCollection, db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
-function finalize!(parameter::MapData{T}) where {T}
+function finalize!(parameter::MapData)
     return nothing
 end

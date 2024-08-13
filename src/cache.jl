@@ -14,6 +14,14 @@ struct Cache
     end
 end
 
+function file_size(cache::Cache)
+    return Base.summarysize(cache.path)
+end
+
+function files(cache::Cache)
+    return readdir(cache.path)
+end
+
 function finalize!(cache::Cache)
     if isdir(cache.path)
         rm(cache.path; recursive = true)

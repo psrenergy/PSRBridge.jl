@@ -17,6 +17,7 @@ export
     AbstractData,
     StaticData,
     TimeSeriesData,
+    MapData,
     Cache,
     initialize!,
     update!,
@@ -26,6 +27,7 @@ export
 include("abstract.jl")
 include("data/static.jl")
 include("data/time_series.jl")
+include("data/map.jl")
 include("collection.jl")
 include("inputs.jl")
 include("cache.jl")

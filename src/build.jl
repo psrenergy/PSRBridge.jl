@@ -3,7 +3,7 @@ macro collection(expression)
 
     name = nameof(evaluated)
     name_snakecase = convert(PascalCase, SnakeCase, string(name))
-    fields = fieldnames(evaluated)
+    fields = filter(x -> x != :id, fieldnames(evaluated))
 
     collection_functions = [
         quote

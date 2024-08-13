@@ -11,7 +11,7 @@ const PSRI = PSRClassesInterface
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 
 @collection @kwdef mutable struct ThermalPlant <: AbstractCollection
-    id::String = "ThermalPlant"
+    const id::String = "ThermalPlant"
     label::StaticData{String} = "label"
     has_commitment::StaticData{Bool} = "has_commitment"
     max_startups::StaticData{Int} = "max_startups"
@@ -25,7 +25,7 @@ const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 end
 
 @collection @kwdef mutable struct HydroPlant <: AbstractCollection
-    id::String = "HydroPlant"
+    const id::String = "HydroPlant"
     label::StaticData{String} = "label"
     initial_volume::StaticData{Float64} = "initial_volume"
     has_commitment::StaticData{Bool} = "has_commitment"
@@ -50,8 +50,8 @@ end
 end
 
 @kwdef mutable struct Inputs <: AbstractInputs
-    hydro_plant::HydroPlant = HydroPlant()
-    thermal_plant::ThermalPlant = ThermalPlant()
+    const hydro_plant::HydroPlant = HydroPlant()
+    const thermal_plant::ThermalPlant = ThermalPlant()
 end
 
 function test_all()

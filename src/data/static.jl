@@ -3,7 +3,7 @@
     data::Vector{T} = []
 end
 
-function Base.convert(::Type{StaticData{T}}, id::String) where {T}
+function Base.convert(::Type{StaticData{T}}, id::AbstractString) where {T}
     return StaticData{T}(id = id)
 end
 

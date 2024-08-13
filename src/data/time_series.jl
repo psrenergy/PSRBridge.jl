@@ -4,7 +4,7 @@
     data::Vector{T} = []
 end
 
-function Base.convert(::Type{TimeSeriesData{T}}, id::String) where {T}
+function Base.convert(::Type{TimeSeriesData{T}}, id::AbstractString) where {T}
     return TimeSeriesData{T}(id = id)
 end
 

@@ -21,7 +21,7 @@ export
     initialize!,
     update!,
     finalize!,
-    @build_collection
+    @collection
 
 include("abstract.jl")
 include("data/static.jl")

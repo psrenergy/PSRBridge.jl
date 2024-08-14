@@ -1,13 +1,12 @@
 using PSRBridge
 
 using Dates
-using PSRClassesInterface
+import PSRClassesInterface as PSRI
 using Random
 using Serialization
 using Test
 using TimerOutputs
 
-const PSRI = PSRClassesInterface
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 
 @collection @kwdef mutable struct ThermalPlant <: AbstractCollection

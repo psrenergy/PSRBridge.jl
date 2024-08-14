@@ -2,11 +2,10 @@ module PSRBridge
 
 using Dates
 using NamingConventions
-using PSRClassesInterface
+import PSRClassesInterface as PSRI
 using Random
 using Serialization
 
-const PSRI = PSRClassesInterface
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 

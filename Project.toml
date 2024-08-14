@@ -1,6 +1,6 @@
 name = "PSRBridge"
 uuid = "c616c425-6d4e-4525-9781-0810509229d1"
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -8,10 +8,8 @@ NamingConventions = "d2ef9726-cd01-476d-83ec-59819e6084ab"
 PSRClassesInterface = "1eab49e5-27d8-4905-b9f6-327b6ea666c4"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
-TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 
 [compat]
-PSRClassesInterface = "0.17.1"
 julia = "1.9"
 
 [extras]

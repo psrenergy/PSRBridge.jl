@@ -33,7 +33,7 @@ function update!(parameter::TimeSeriesData{T}, collection::AbstractCollection, d
 
     date_time = dict[:date_time]
 
-    @timeit "read_time_series_row" parameter.data = PSRDatabaseSQLite.read_time_series_row(
+    parameter.data = PSRDatabaseSQLite.read_time_series_row(
         db,
         collection.id,
         parameter.id;

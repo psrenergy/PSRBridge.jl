@@ -50,10 +50,10 @@ function update!(collection::AbstractCollection, db::DatabaseSQLite, cache::Cach
     path = joinpath(cache.path, filename)
 
     if isfile(path)
-        @timeit "deserialize" collection = Serialization.deserialize(path)
+        collection = Serialization.deserialize(path)
     else
         update!(collection, db; kwargs...)
-        @timeit "serialize" Serialization.serialize(path, collection)
+        Serialization.serialize(path, collection)
     end
 
     return nothing

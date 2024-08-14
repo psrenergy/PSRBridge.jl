@@ -5,7 +5,6 @@ using NamingConventions
 using PSRClassesInterface
 using Random
 using Serialization
-using TimerOutputs
 
 const PSRI = PSRClassesInterface
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite

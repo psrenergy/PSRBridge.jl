@@ -10,7 +10,7 @@ using TimerOutputs
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 
 @collection @kwdef mutable struct ThermalPlant <: AbstractCollection
-    const id::String = "ThermalPlant"
+    id::String = "ThermalPlant"
     label::StaticData{String} = "label"
     has_commitment::StaticData{Bool} = "has_commitment"
     max_startups::StaticData{Int} = "max_startups"
@@ -24,7 +24,7 @@ const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 end
 
 @collection @kwdef mutable struct HydroPlant <: AbstractCollection
-    const id::String = "HydroPlant"
+    id::String = "HydroPlant"
     label::StaticData{String} = "label"
     initial_volume::StaticData{Float64} = "initial_volume"
     has_commitment::StaticData{Bool} = "has_commitment"

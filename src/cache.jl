@@ -29,17 +29,22 @@ function finalize!(cache::Cache)
     return nothing
 end
 
+function format_value(value::Any)
+    return "$value"
+end
+
+function format_value(value::DateTime)
+    return Dates.format(value, "yyyymmddHHMMSS")
+end
+
 function build_filename(collection::AbstractCollection; kwargs...)
     dict = Dict(kwargs)
     sorted = sort(collect(dict), by = x -> x[1])
 
     vector = String[]
     for (key, value) in sorted
-        if isa(value, DateTime)
-            push!(vector, "$key$(Dates.format(value, "yyyymmddHHMMSS"))")
-        else
-            push!(vector, "$key$value")
-        end
+        formatted_value = format_value(value)
+        push!(vector, "$key$formatted_value")
     end
 
     return collection.id * "-" * join(vector, "-") * ".bin"

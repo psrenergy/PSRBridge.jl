@@ -22,14 +22,14 @@ macro collection(expression)
             end)
 
             push!(getters, quote
-                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
+                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs)
                     return inputs.$(Symbol(name_snakecase)).$field_name
                 end
             end)
 
             # temporary
             push!(getters, quote
-                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
+                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs)
                     return inputs.collections.$(Symbol(name_snakecase)).$field_name
                 end
             end)            

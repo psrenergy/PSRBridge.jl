@@ -14,24 +14,45 @@ macro collection(expression)
             continue
         end
 
-        push!(getters, quote
-            function $(Symbol(name_snakecase, :_, field_name))(collection::$name, i::Integer)
-                return collection.$field_name[i]
-            end
-        end)
+        if field_type == :String
+            push!(getters, quote
+                function $(Symbol(name_snakecase, :_, field_name))(collection::$name)
+                    return collection.$field_name
+                end
+            end)
 
-        push!(getters, quote
-            function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
-                return inputs.$(Symbol(name_snakecase)).$field_name[i]
-            end
-        end)
+            push!(getters, quote
+                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
+                    return inputs.$(Symbol(name_snakecase)).$field_name
+                end
+            end)
 
-        # temporary
-        push!(getters, quote
-            function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
-                return inputs.collections.$(Symbol(name_snakecase)).$field_name[i]
-            end
-        end)
+            # temporary
+            push!(getters, quote
+                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
+                    return inputs.collections.$(Symbol(name_snakecase)).$field_name
+                end
+            end)            
+        else
+            push!(getters, quote
+                function $(Symbol(name_snakecase, :_, field_name))(collection::$name, i::Integer)
+                    return collection.$field_name[i]
+                end
+            end)
+
+            push!(getters, quote
+                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
+                    return inputs.$(Symbol(name_snakecase)).$field_name[i]
+                end
+            end)
+
+            # temporary
+            push!(getters, quote
+                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
+                    return inputs.collections.$(Symbol(name_snakecase)).$field_name[i]
+                end
+            end)
+        end
     end
 
     return esc(

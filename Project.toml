@@ -1,6 +1,6 @@
 name = "PSRBridge"
 uuid = "c616c425-6d4e-4525-9781-0810509229d1"
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"

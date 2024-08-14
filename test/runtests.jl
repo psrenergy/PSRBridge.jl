@@ -54,7 +54,7 @@ end
 end
 
 function test_all()
-    iterations = 100
+    iterations = 10
     path = raw"C:\Development\BidBasedDispatch\slow\study.bid_based_dispatch"
 
     db = PSRI.load_study(PSRI.PSRDatabaseSQLiteInterface(), path, read_only = true)

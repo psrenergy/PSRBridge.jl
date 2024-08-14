@@ -1,6 +1,6 @@
 macro collection(expression)
     @capture(expression, @kwdef mutable struct name_ <: AbstractCollection fields__ end) ||
-        error("Expected @kwdef mutable struct T <: AbstractCollection fields... end, got $expression")
+        error("Expected @collection @kwdef mutable struct name <: AbstractCollection fields... end, got $expression")
 
     name_snakecase = convert(PascalCase, SnakeCase, string(name))
 
@@ -23,6 +23,13 @@ macro collection(expression)
         push!(getters, quote
             function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
                 return inputs.$(Symbol(name_snakecase)).$field_name[i]
+            end
+        end)
+
+        # temporary
+        push!(getters, quote
+            function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
+                return inputs.collections.$(Symbol(name_snakecase)).$field_name[i]
             end
         end)
     end

@@ -1,10 +1,10 @@
-function initialize!(inputs::AbstractInputs, db::DatabaseSQLite; kwargs...)
-    initialize!(inputs.collections, db; kwargs...)
+function initialize!(inputs::AbstractInputs; kwargs...)
+    initialize!(inputs.collections, inputs.db; kwargs...)
     return nothing
 end
 
-function update!(inputs::AbstractInputs, db::DatabaseSQLite; kwargs...)
-    update!(inputs.collections, db; kwargs...)
+function update!(inputs::AbstractInputs; kwargs...)
+    update!(inputs.collections, inputs.db; kwargs...)
     return nothing
 end
 

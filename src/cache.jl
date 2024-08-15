@@ -75,7 +75,7 @@ function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Ca
     return nothing
 end
 
-function update!(inputs::AbstractInputs, db::DatabaseSQLite, cache::Cache; kwargs...)
-    update!(inputs.collections, db, cache; kwargs...)
+function update!(inputs::AbstractInputs, cache::Cache; kwargs...)
+    update!(inputs.collections, inputs.db, cache; kwargs...)
     return nothing
 end

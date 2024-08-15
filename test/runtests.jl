@@ -54,6 +54,7 @@ end
 end
 
 @kwdef mutable struct Inputs <: AbstractInputs
+    db::DatabaseSQLite
     collections::Collections = Collections()
 end
 
@@ -63,17 +64,17 @@ function test_all()
 
     db = PSRI.load_study(PSRI.PSRDatabaseSQLiteInterface(), path, read_only = true)
 
-    inputs = Inputs()
+    inputs = Inputs(; db = db)
     cache = Cache()
 
-    @timeit "initialize!" initialize!(inputs, db)
+    @timeit "initialize!" initialize!(inputs)
 
     @show thermal_plant_label(inputs, 1)
 
     @timeit "not cached" begin
         for _ in 1:iterations
             for month in 1:12
-                @timeit "update!" update!(inputs, db, date_time = DateTime(2025, month, 1))
+                @timeit "update!" update!(inputs, date_time = DateTime(2025, month, 1))
             end
         end
     end
@@ -81,7 +82,7 @@ function test_all()
     @timeit "cached" begin
         for _ in 1:iterations
             for month in 1:12
-                @timeit "update!" update!(inputs, db, cache, date_time = DateTime(2025, month, 1))
+                @timeit "update!" update!(inputs, cache, date_time = DateTime(2025, month, 1))
             end
         end
     end

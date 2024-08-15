@@ -64,13 +64,18 @@ function update!(collection::AbstractCollection, db::DatabaseSQLite, cache::Cach
     return nothing
 end
 
-function update!(inputs::AbstractInputs, db::DatabaseSQLite, cache::Cache; kwargs...)
-    type = typeof(inputs)
+function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Cache; kwargs...)
+    type = typeof(collections)
 
     for field_name in fieldnames(type)
-        field = getfield(inputs, field_name)
+        field = getfield(collections, field_name)
         update!(field, db, cache; kwargs...)
     end
 
+    return nothing
+end
+
+function update!(inputs::AbstractInputs, db::DatabaseSQLite, cache::Cache; kwargs...)
+    update!(inputs.collections, db, cache; kwargs...)
     return nothing
 end

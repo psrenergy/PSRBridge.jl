@@ -22,12 +22,11 @@ macro collection(expression)
             end)
 
             push!(getters, quote
-                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs)
-                    return inputs.$(Symbol(name_snakecase)).$field_name
+                function $(Symbol(name_snakecase, :_, field_name))(collections::AbstractCollections)
+                    return collections.$(Symbol(name_snakecase)).$field_name
                 end
             end)
 
-            # temporary
             push!(getters, quote
                 function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs)
                     return inputs.collections.$(Symbol(name_snakecase)).$field_name
@@ -41,12 +40,11 @@ macro collection(expression)
             end)
 
             push!(getters, quote
-                function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
-                    return inputs.$(Symbol(name_snakecase)).$field_name[i]
+                function $(Symbol(name_snakecase, :_, field_name))(collections::AbstractCollections, i::Integer)
+                    return collections.$(Symbol(name_snakecase)).$field_name[i]
                 end
             end)
 
-            # temporary
             push!(getters, quote
                 function $(Symbol(name_snakecase, :_, field_name))(inputs::AbstractInputs, i::Integer)
                     return inputs.collections.$(Symbol(name_snakecase)).$field_name[i]

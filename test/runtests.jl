@@ -8,6 +8,7 @@ using Test
 using TimerOutputs
 
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
+const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 
 @collection @kwdef mutable struct ThermalPlant <: AbstractCollection
     id::String = "ThermalPlant"

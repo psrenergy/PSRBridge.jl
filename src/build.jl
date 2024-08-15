@@ -2,7 +2,7 @@ macro collection(expression)
     @capture(expression, @kwdef mutable struct name_ <: AbstractCollection fields__ end) ||
         error("Expected @collection @kwdef mutable struct name <: AbstractCollection fields... end, got $expression")
 
-    name_snakecase = convert(PascalCase, SnakeCase, string(name))
+    name_snakecase = NamingConventions.convert(PascalCase, SnakeCase, string(name))
 
     getters = Expr[]
 

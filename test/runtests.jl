@@ -48,9 +48,13 @@ end
     spill_to_index::MapData = ("HydroPlant", "spill_to")
 end
 
+@kwdef mutable struct Collections <: AbstractCollections
+    hydro_plant::HydroPlant = HydroPlant()
+    thermal_plant::ThermalPlant = ThermalPlant()
+end
+
 @kwdef mutable struct Inputs <: AbstractInputs
-    const hydro_plant::HydroPlant = HydroPlant()
-    const thermal_plant::ThermalPlant = ThermalPlant()
+    collections::Collections = Collections()
 end
 
 function test_all()

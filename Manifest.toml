@@ -141,7 +141,7 @@ version = "1.2.0"
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.NamingConventions]]
-git-tree-sha1 = "46b45279fb48770e8fb8b1681cac709c9ef43fec"
+git-tree-sha1 = "a7217e9896069974221a4e0b344a8d051068a437"
 repo-rev = "main"
 repo-url = "https://github.com/raphasampaio/NamingConventions.jl.git"
 uuid = "d2ef9726-cd01-476d-83ec-59819e6084ab"

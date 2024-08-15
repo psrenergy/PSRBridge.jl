@@ -14,6 +14,7 @@ const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 export
     AbstractInputs,
     AbstractCollection,
+    AbstractCollections,
     AbstractData,
     StaticData,
     TimeSeriesData,
@@ -29,6 +30,7 @@ include("data/static.jl")
 include("data/time_series.jl")
 include("data/map.jl")
 include("collection.jl")
+include("collections.jl")
 include("inputs.jl")
 include("cache.jl")
 include("build.jl")

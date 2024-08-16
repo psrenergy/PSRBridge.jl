@@ -51,7 +51,7 @@ Get the value of the $field_name field from the $name collection.
                 @doc $doc_string function $function_name(inputs::AbstractInputs)
                     return inputs.collections.$name_snakecase.$field_name
                 end
-            end)            
+            end)
         else
             doc_string = 
 """
@@ -83,7 +83,7 @@ Get the value of the $field_name field from the $name collection at index i.
 
 Get the value of the $field_name field from the $name collection at index i.
 """         
-            push!(getters, quote           
+            push!(getters, quote
                 @doc $doc_string function $function_name(inputs::AbstractInputs, i::Integer)
                     return inputs.collections.$name_snakecase.$field_name[i]
                 end

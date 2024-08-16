@@ -72,6 +72,8 @@ function test_all()
 
     @show thermal_plant_label(inputs, 1)
 
+    @show Base.doc(thermal_plant_label)
+
     @timeit "not cached" begin
         for _ in 1:iterations
             for month in 1:12

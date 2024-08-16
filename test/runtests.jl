@@ -70,6 +70,8 @@ function test_all()
 
     @timeit "initialize!" initialize!(inputs)
 
+    @show thermal_plant_label(inputs.collections.thermal_plant, 1)
+    @show thermal_plant_label(inputs.collections, 1)
     @show thermal_plant_label(inputs, 1)
 
     @show Base.doc(thermal_plant_label)

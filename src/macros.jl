@@ -19,13 +19,13 @@ macro collection(expression)
         if field_type == :String
             doc_string = 
 """
-    $function_name(collection::$name)
+    $function_name($name_snakecase::$name)
 
 Get the value of the $field_name field from the $name collection.
 """
             push!(getters, quote
-                @doc $doc_string function $function_name(collection::$name)
-                    return collection.$field_name
+                @doc $doc_string function $function_name($name_snakecase::$name)
+                    return $name_snakecase.$field_name
                 end
             end)
 
@@ -55,13 +55,13 @@ Get the value of the $field_name field from the $name collection.
         else
             doc_string = 
 """
-    $function_name(collection::$name, i::Integer)
+    $function_name($name_snakecase::$name, i::Integer)
 
 Get the value of the $field_name field from the $name collection at index i.
 """             
             push!(getters, quote
-                @doc $doc_string function $function_name(collection::$name, i::Integer)
-                    return collection.$field_name[i]
+                @doc $doc_string function $function_name($name_snakecase::$name, i::Integer)
+                    return $name_snakecase.$field_name[i]
                 end
             end)
 

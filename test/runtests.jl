@@ -1,5 +1,6 @@
 using PSRBridge
 
+using DataFrames
 using Dates
 import PSRClassesInterface as PSRI
 using Random
@@ -10,18 +11,26 @@ using TimerOutputs
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 
+const THERMAL_PLANT_SIZE = 20
+const HYDRO_PLANT_SIZE = 20
+const DATE_TIMES = [DateTime(2025, month, 1) for month in 1:2]
 
 @collection @kwdef mutable struct HydroPlant <: AbstractCollection
     id::String = "HydroPlant"
+
     label::StaticVectorData{String} = "label"
     initial_volume::StaticVectorData{Float64} = "initial_volume"
     has_commitment::StaticVectorData{Bool} = "has_commitment"
+
+    existing::TimeSeriesData{Bool} = "existing"
+    max_generation::TimeSeriesData{Float64} = "max_generation"
+
     # non_controllable_spillage::StaticVectorData{Bool} = "non_controllable_spillage"
 
     # existing::TimeSeriesData{Float64} = "existing"
     # production_factor::TimeSeriesData{Float64} = "production_factor"
     # min_generation::TimeSeriesData{Float64} = "min_generation"
-    # max_generation::TimeSeriesData{Float64} = "max_generation"
+    
     # min_turbining::TimeSeriesData{Float64} = "min_turbining"
     # max_turbining::TimeSeriesData{Float64} = "max_turbining"
     # min_volume::TimeSeriesData{Float64} = "min_volume"
@@ -34,6 +43,11 @@ const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
     # gauging_station_index::MapData = ("GaugingStation", "id")
     # turbine_to_index::MapData = ("HydroPlant", "turbine_to")
     # spill_to_index::MapData = ("HydroPlant", "spill_to")
+end
+
+function add_hydro_plant!(db::DatabaseSQLite; kwargs...)
+    PSRI.create_element!(db, "HydroPlant"; kwargs...)
+    return nothing
 end
 
 @collection @kwdef mutable struct ThermalPlant <: AbstractCollection
@@ -51,10 +65,14 @@ end
     # startup_cost::TimeSeriesData{Float64} = "startup_cost"
 end
 
-function adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
+    PSRI.create_element!(db, "ThermalPlant"; kwargs...)
     return nothing
 end
 
+function adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+    return nothing
+end
 
 @kwdef mutable struct Collections <: AbstractCollections
     hydro_plant::HydroPlant = HydroPlant()
@@ -74,11 +92,19 @@ function build_hydro_plant_label(i::Integer)
     return "Hydro Plant $i"
 end
 
-function test_all()
-    thermal_plant_size = 20
-    hydro_plant_size = 20
+function build_hydro_plant_has_commitment(i::Integer)
+    return i % 2 == 0
+end
 
-    path = joinpath(@__DIR__, "db.sqlite")
+function build_hydro_plant_existing(date_time::DateTime)
+    return Dates.month(date_time) % 2 == 0
+end
+
+function build_hydro_plant_max_generation(date_time::DateTime)
+    return Float64(Dates.month(date_time))
+end
+
+function build_database(path::AbstractString)
     path_schema = joinpath(@__DIR__, "schema.sql")
 
     db = PSRDatabaseSQLite.create_empty_db_from_schema(
@@ -93,33 +119,45 @@ function test_all()
         label = "Bridge",
     )
 
-    for i in 1:thermal_plant_size
-        PSRDatabaseSQLite.create_element!(
-            db,
-            "ThermalPlant";
+    for i in 1:THERMAL_PLANT_SIZE
+        add_thermal_plant!(
+            db;
             label = build_thermal_plant_label(i),
             shutdown_cost = Float64(i),
             max_startups = i,
         )
     end
 
-    for i in 1:hydro_plant_size
-        PSRDatabaseSQLite.create_element!(
-            db,
-            "HydroPlant";
+    for i in 1:HYDRO_PLANT_SIZE
+        add_hydro_plant!(db;
             label = build_hydro_plant_label(i),
             initial_volume = Float64(i),
+            has_commitment = build_hydro_plant_has_commitment(i) ? 1 : 0,
+            parameters = DataFrame(;
+                date_time = DATE_TIMES,
+                existing = [build_hydro_plant_existing(date_time) ? 1 : 0 for date_time in DATE_TIMES],
+                max_generation = [build_hydro_plant_max_generation(date_time) for date_time in DATE_TIMES],
+            ),
         )
     end
 
-    iterations = 2
+    PSRDatabaseSQLite.close!(db)
+
+    return nothing
+end
+
+function test_all()
+    path = joinpath(@__DIR__, "db.sqlite")
+    build_database(path)
+
+    db = PSRI.load_study(PSRI.PSRDatabaseSQLiteInterface(), path, read_only = true)
 
     inputs = Inputs(; db = db)
     cache = Cache(verbose = true)
 
     @timeit "initialize!" initialize!(inputs)
 
-    for i in 1:hydro_plant_size
+    for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)
         @test hydro_plant_label(inputs.collections.hydro_plant, i) == label
         @test hydro_plant_label(inputs.collections, i) == label
@@ -129,9 +167,14 @@ function test_all()
         @test hydro_plant_initial_volume(inputs.collections.hydro_plant, i) == initial_volume
         @test hydro_plant_initial_volume(inputs.collections, i) == initial_volume
         @test hydro_plant_initial_volume(inputs, i) == initial_volume
+
+        has_commitment = build_hydro_plant_has_commitment(i)
+        @test hydro_plant_has_commitment(inputs.collections.hydro_plant, i) == has_commitment
+        @test hydro_plant_has_commitment(inputs.collections, i) == has_commitment
+        @test hydro_plant_has_commitment(inputs, i) == has_commitment
     end
 
-    for i in 1:thermal_plant_size
+    for i in 1:THERMAL_PLANT_SIZE
         label = build_thermal_plant_label(i)
         @test thermal_plant_label(inputs.collections.thermal_plant, i) == label
         @test thermal_plant_label(inputs.collections, i) == label
@@ -150,18 +193,40 @@ function test_all()
 
     @show Base.doc(thermal_plant_label)
 
-    @timeit "not cached" begin
-        for _ in 1:iterations
-            for month in 1:12
-                @timeit "update!" update!(inputs, date_time = DateTime(2025, month, 1))
+    iterations = 2
+
+    for _ in 1:iterations
+        for date_time in DATE_TIMES
+            @timeit "not cached - update!" update!(inputs, date_time = date_time)
+
+            for i in 1:HYDRO_PLANT_SIZE
+                existing = build_hydro_plant_existing(date_time)
+                @test hydro_plant_existing(inputs.collections.hydro_plant, i) == existing
+                @test hydro_plant_existing(inputs.collections, i) == existing
+                @test hydro_plant_existing(inputs, i) == existing
+
+                max_generation = build_hydro_plant_max_generation(date_time)
+                @test hydro_plant_max_generation(inputs.collections.hydro_plant, i) == max_generation
+                @test hydro_plant_max_generation(inputs.collections, i) == max_generation
+                @test hydro_plant_max_generation(inputs, i) == max_generation
             end
         end
     end
 
-    @timeit "cached" begin
-        for _ in 1:iterations
-            for month in 1:12
-                @timeit "update!" update!(inputs, cache, date_time = DateTime(2025, month, 1))
+    for _ in 1:iterations
+        for date_time in DATE_TIMES
+            @timeit "cached - update!" update!(inputs, cache, date_time = date_time)
+
+            for i in 1:HYDRO_PLANT_SIZE
+                @show existing = build_hydro_plant_existing(date_time)
+                @test hydro_plant_existing(inputs.collections.hydro_plant, i) == existing
+                @test hydro_plant_existing(inputs.collections, i) == existing
+                @test hydro_plant_existing(inputs, i) == existing
+
+                max_generation = build_hydro_plant_max_generation(date_time)
+                @test hydro_plant_max_generation(inputs.collections.hydro_plant, i) == max_generation
+                @test hydro_plant_max_generation(inputs.collections, i) == max_generation
+                @test hydro_plant_max_generation(inputs, i) == max_generation
             end
         end
     end

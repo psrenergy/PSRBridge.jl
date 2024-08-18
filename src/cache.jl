@@ -59,8 +59,8 @@ function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Ca
         if cache.verbose
             println("Loading cache ($(Base.summarysize(path)) kb): $path")
         end
-
         collections = Serialization.deserialize(path)
+        @show collections.hydro_plant.existing.data
     else
         update!(collections, db; kwargs...)
         Serialization.serialize(path, collections)
@@ -68,6 +68,7 @@ function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Ca
         if cache.verbose
             println("Saving cache ($(Base.summarysize(path)) kb): $path")
         end
+        @show collections.hydro_plant.existing.data
     end
 
     return nothing

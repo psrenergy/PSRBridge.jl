@@ -1,16 +1,21 @@
 struct Cache
+    verbose::Bool
     path::String
 
-    function Cache()
+    function Cache(; verbose::Bool = false)
         path = joinpath(tempdir(), randstring(16))
 
         if isdir(path)
             rm(path; recursive = true)
         end
 
+        if verbose
+            println("Initialize cache: $path")
+        end
+
         mkdir(path)
 
-        return new(path)
+        return new(verbose, path)
     end
 end
 
@@ -24,6 +29,10 @@ end
 
 function finalize!(cache::Cache)
     if isdir(cache.path)
+        if cache.verbose
+            println("Finalizing cache: $(cache.path)")
+        end
+
         rm(cache.path; recursive = true)
     end
     return nothing
@@ -55,9 +64,18 @@ function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Ca
     path = joinpath(cache.path, filename)
 
     if isfile(path)
+        if cache.verbose
+            println("Loading cache: $path")
+        end
+
         collections = Serialization.deserialize(path)
     else
         update!(collections, db; kwargs...)
+
+        if cache.verbose
+            println("Saving cache: $path")
+        end
+
         Serialization.serialize(path, collections)
     end
 

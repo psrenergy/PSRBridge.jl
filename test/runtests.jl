@@ -70,7 +70,7 @@ function test_all()
     db = PSRI.load_study(PSRI.PSRDatabaseSQLiteInterface(), path, read_only = true)
 
     inputs = Inputs(; db = db)
-    cache = Cache()
+    cache = Cache(verbose = true)
 
     @timeit "initialize!" initialize!(inputs)
 

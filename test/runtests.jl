@@ -11,6 +11,7 @@ using TimerOutputs
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 
+const ITERATIONS = 10
 const THERMAL_PLANT_SIZE = 20
 const HYDRO_PLANT_SIZE = 20
 const DATE_TIMES = [DateTime(2025, month, 1) for month in 1:12]
@@ -127,9 +128,7 @@ function test_all()
 
     @show Base.doc(thermal_plant_label)
 
-    iterations = 10
-
-    for _ in 1:iterations
+    for _ in 1:ITERATIONS
         for date_time in DATE_TIMES
             @timeit "not cached - update!" update!(inputs, date_time = date_time)
 
@@ -147,7 +146,7 @@ function test_all()
         end
     end
 
-    for _ in 1:iterations
+    for _ in 1:ITERATIONS
         for date_time in DATE_TIMES
             @timeit "cached - update!" update!(inputs, cache, date_time = date_time)
 

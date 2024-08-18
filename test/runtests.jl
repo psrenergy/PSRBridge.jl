@@ -12,10 +12,10 @@ const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 
 @collection @kwdef mutable struct ThermalPlant <: AbstractCollection
     id::String = "ThermalPlant"
-    label::StaticData{String} = "label"
-    has_commitment::StaticData{Bool} = "has_commitment"
-    max_startups::StaticData{Int} = "max_startups"
-    shutdown_cost::StaticData{Float64} = "shutdown_cost"
+    label::StaticVectorData{String} = "label"
+    has_commitment::StaticVectorData{Bool} = "has_commitment"
+    max_startups::StaticVectorData{Int} = "max_startups"
+    shutdown_cost::StaticVectorData{Float64} = "shutdown_cost"
 
     existing::TimeSeriesData{Bool} = "existing"
     min_generation::TimeSeriesData{Float64} = "min_generation"
@@ -30,10 +30,10 @@ end
 
 @collection @kwdef mutable struct HydroPlant <: AbstractCollection
     id::String = "HydroPlant"
-    label::StaticData{String} = "label"
-    initial_volume::StaticData{Float64} = "initial_volume"
-    has_commitment::StaticData{Bool} = "has_commitment"
-    non_controllable_spillage::StaticData{Bool} = "non_controllable_spillage"
+    label::StaticVectorData{String} = "label"
+    initial_volume::StaticVectorData{Float64} = "initial_volume"
+    has_commitment::StaticVectorData{Bool} = "has_commitment"
+    non_controllable_spillage::StaticVectorData{Bool} = "non_controllable_spillage"
 
     existing::TimeSeriesData{Float64} = "existing"
     production_factor::TimeSeriesData{Float64} = "production_factor"

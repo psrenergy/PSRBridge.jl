@@ -16,7 +16,7 @@ export
     AbstractCollection,
     AbstractCollections,
     AbstractData,
-    StaticData,
+    StaticVectorData,
     TimeSeriesData,
     MapData,
     Cache,
@@ -27,7 +27,7 @@ export
     @collection
 
 include("abstract.jl")
-include("data/static.jl")
+include("data/static_vector.jl")
 include("data/time_series.jl")
 include("data/map.jl")
 include("collection.jl")

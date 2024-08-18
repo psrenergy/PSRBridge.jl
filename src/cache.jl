@@ -19,14 +19,6 @@ struct Cache
     end
 end
 
-function file_size(cache::Cache)
-    return Base.summarysize(cache.path)
-end
-
-function files(cache::Cache)
-    return readdir(cache.path)
-end
-
 function finalize!(cache::Cache)
     if isdir(cache.path)
         if cache.verbose
@@ -65,18 +57,17 @@ function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Ca
 
     if isfile(path)
         if cache.verbose
-            println("Loading cache: $path")
+            println("Loading cache ($(Base.summarysize(path)) kb): $path")
         end
 
         collections = Serialization.deserialize(path)
     else
         update!(collections, db; kwargs...)
+        Serialization.serialize(path, collections)
 
         if cache.verbose
-            println("Saving cache: $path")
+            println("Saving cache ($(Base.summarysize(path)) kb): $path")
         end
-
-        Serialization.serialize(path, collections)
     end
 
     return nothing

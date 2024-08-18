@@ -51,7 +51,7 @@ function build_filename(kwargs...)
     return join(vector, "-") * ".bin"
 end
 
-function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Cache; kwargs...)
+function update!(inputs::AbstractInputs, cache::Cache; kwargs...)
     filename = build_filename(kwargs...)
     path = joinpath(cache.path, filename)
 
@@ -59,22 +59,14 @@ function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Ca
         if cache.verbose
             println("Loading cache ($(Base.summarysize(path)) kb): $path")
         end
-        collections = Serialization.deserialize(path)
-        @show collections.hydro_plant.existing.data
+        inputs.collections = Serialization.deserialize(path)
     else
-        update!(collections, db; kwargs...)
-        Serialization.serialize(path, collections)
+        update!(inputs.collections, inputs.db; kwargs...)
+        Serialization.serialize(path, inputs.collections)
 
         if cache.verbose
             println("Saving cache ($(Base.summarysize(path)) kb): $path")
         end
-        @show collections.hydro_plant.existing.data
     end
-
-    return nothing
-end
-
-function update!(inputs::AbstractInputs, cache::Cache; kwargs...)
-    update!(inputs.collections, inputs.db, cache; kwargs...)
     return nothing
 end

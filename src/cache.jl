@@ -37,7 +37,7 @@ function format_value(value::DateTime)
     return Dates.format(value, "yyyymmddHHMMSS")
 end
 
-function build_filename(collection::AbstractCollection; kwargs...)
+function build_filename(kwargs...)
     dict = Dict(kwargs)
     sorted = sort(collect(dict), by = x -> x[1])
 
@@ -47,29 +47,18 @@ function build_filename(collection::AbstractCollection; kwargs...)
         push!(vector, "$key$formatted_value")
     end
 
-    return collection.id * "-" * join(vector, "-") * ".bin"
-end
-
-function update!(collection::AbstractCollection, db::DatabaseSQLite, cache::Cache; kwargs...)
-    filename = build_filename(collection; kwargs...)
-    path = joinpath(cache.path, filename)
-
-    if isfile(path)
-        collection = Serialization.deserialize(path)
-    else
-        update!(collection, db; kwargs...)
-        Serialization.serialize(path, collection)
-    end
-
-    return nothing
+    return join(vector, "-") * ".bin"
 end
 
 function update!(collections::AbstractCollections, db::DatabaseSQLite, cache::Cache; kwargs...)
-    type = typeof(collections)
+    filename = build_filename(kwargs...)
+    path = joinpath(cache.path, filename)
 
-    for field_name in fieldnames(type)
-        field = getfield(collections, field_name)
-        update!(field, db, cache; kwargs...)
+    if isfile(path)
+        collections = Serialization.deserialize(path)
+    else
+        update!(collections, db; kwargs...)
+        Serialization.serialize(path, collections)
     end
 
     return nothing

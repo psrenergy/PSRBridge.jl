@@ -22,6 +22,7 @@ export
     Cache,
     initialize!,
     update!,
+    adjust!,
     finalize!,
     @collection
 

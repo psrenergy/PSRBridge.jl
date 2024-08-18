@@ -26,6 +26,10 @@ function update!(collection::AbstractCollection, db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
+function adjust!(collection::AbstractCollection, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+    return nothing
+end
+
 function finalize!(collection::AbstractCollection)
     type = typeof(collection)
 

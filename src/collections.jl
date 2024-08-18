@@ -1,7 +1,7 @@
 function initialize!(collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
-    type = typeof(collections)
+    field_names = fieldnames(typeof(collections))
 
-    for field_name in fieldnames(type)
+    for field_name in field_names
         field = getfield(collections, field_name)
         initialize!(field, db; kwargs...)
     end
@@ -9,19 +9,25 @@ function initialize!(collections::AbstractCollections, db::DatabaseSQLite; kwarg
 end
 
 function update!(collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
-    type = typeof(collections)
+    field_names = fieldnames(typeof(collections))
 
-    for field_name in fieldnames(type)
+    for field_name in field_names
         field = getfield(collections, field_name)
         update!(field, db; kwargs...)
     end
+
+    for field_name in field_names
+        field = getfield(collections, field_name)
+        adjust!(field, collections, db; kwargs...)
+    end
+
     return nothing
 end
 
 function finalize!(collections::AbstractCollections)
-    type = typeof(collections)
+    field_names = fieldnames(typeof(collections))
 
-    for field_name in fieldnames(type)
+    for field_name in field_names
         field = getfield(collections, field_name)
         finalize!(field)
     end

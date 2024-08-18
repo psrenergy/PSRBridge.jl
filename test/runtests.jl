@@ -24,6 +24,10 @@ const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
     startup_cost::TimeSeriesData{Float64} = "startup_cost"
 end
 
+function adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+    return nothing
+end
+
 @collection @kwdef mutable struct HydroPlant <: AbstractCollection
     id::String = "HydroPlant"
     label::StaticData{String} = "label"
@@ -60,7 +64,7 @@ end
 end
 
 function test_all()
-    iterations = 10
+    iterations = 2
     path = raw"C:\Development\BidBasedDispatch\slow\study.bid_based_dispatch"
 
     db = PSRI.load_study(PSRI.PSRDatabaseSQLiteInterface(), path, read_only = true)

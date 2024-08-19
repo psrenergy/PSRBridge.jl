@@ -29,7 +29,7 @@ include("build.jl")
     time_series_float::TimeSeriesData{Float64} = "time_series_float"
     time_series_int::TimeSeriesData{Int} = "time_series_int"
     time_series_bool::TimeSeriesData{Bool} = "time_series_bool"
-    
+
     adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
     adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
     adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
@@ -74,7 +74,7 @@ end
 
 function PSRBridge.adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
     size = length(collection)
-    
+
     for i in 1:size
         collection.adjusted_vector_float[i] = collections.thermal_plant.time_series_float[i] + collections.hydro_plant.time_series_float[i]
         collection.adjusted_vector_int[i] = collections.thermal_plant.time_series_int[i] + collections.hydro_plant.time_series_int[i]

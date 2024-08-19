@@ -28,3 +28,12 @@ CREATE TABLE ThermalPlant (
     shutdown_cost REAL,
     max_startups INTEGER
 ) STRICT;
+
+CREATE TABLE ThermalPlant_time_series_parameters (
+    id INTEGER, 
+    date_time TEXT NOT NULL,
+    existing INTEGER,
+    max_generation REAL,
+    FOREIGN KEY(id) REFERENCES ThermalPlant(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    PRIMARY KEY (id, date_time)
+) STRICT;

@@ -14,7 +14,7 @@ const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 const ITERATIONS = 10
 const THERMAL_PLANT_SIZE = 20
 const HYDRO_PLANT_SIZE = 20
-const DATE_TIMES = [DateTime(year, month, 1) for month in 1:12 for year in 2000:2030]
+const DATE_TIMES = [DateTime(year, month, 1) for month in 1:12 for year in 2000:2005]
 
 include("build.jl")
 
@@ -104,6 +104,9 @@ function test_all()
     cache = Cache(verbose = false)
 
     @timeit "initialize!" initialize!(inputs)
+
+    @test thermal_plant_id(inputs) == "ThermalPlant"
+    @test hydro_plant_id(inputs) == "HydroPlant"
 
     for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)

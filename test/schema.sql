@@ -9,15 +9,17 @@ CREATE TABLE Configuration (
 CREATE TABLE HydroPlant (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     label TEXT UNIQUE NOT NULL,
-    initial_volume REAL,
-    has_commitment INTEGER DEFAULT 0
+    static_vector_float REAL,
+    static_vector_int INTEGER,
+    static_vector_bool INTEGER
 ) STRICT;
 
 CREATE TABLE HydroPlant_time_series_parameters (
     id INTEGER, 
     date_time TEXT NOT NULL,
-    existing INTEGER,
-    max_generation REAL,
+    time_series_float REAL,
+    time_series_int INTEGER,
+    time_series_bool INTEGER,
     FOREIGN KEY(id) REFERENCES HydroPlant(id) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY (id, date_time)
 ) STRICT;
@@ -25,15 +27,17 @@ CREATE TABLE HydroPlant_time_series_parameters (
 CREATE TABLE ThermalPlant (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     label TEXT UNIQUE NOT NULL,
-    shutdown_cost REAL,
-    max_startups INTEGER
+    static_vector_float REAL,
+    static_vector_int INTEGER,
+    static_vector_bool INTEGER
 ) STRICT;
 
 CREATE TABLE ThermalPlant_time_series_parameters (
     id INTEGER, 
     date_time TEXT NOT NULL,
-    existing INTEGER,
-    max_generation REAL,
+    time_series_float REAL,
+    time_series_int INTEGER,
+    time_series_bool INTEGER,
     FOREIGN KEY(id) REFERENCES ThermalPlant(id) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY (id, date_time)
 ) STRICT;

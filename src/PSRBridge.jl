@@ -27,9 +27,10 @@ export
     @collection
 
 include("abstract.jl")
+include("data/adjusted_vector.jl")
+include("data/map.jl")
 include("data/static_vector.jl")
 include("data/time_series.jl")
-include("data/map.jl")
 include("collection.jl")
 include("collections.jl")
 include("inputs.jl")

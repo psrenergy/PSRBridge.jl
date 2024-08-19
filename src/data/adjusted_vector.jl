@@ -1,10 +1,10 @@
 @kwdef mutable struct AdjustedVectorData{T} <: AbstractData
-    id::String
     data::Vector{T} = []
 end
 
-function Base.convert(::Type{AdjustedVectorData{T}}, id::AbstractString) where {T}
-    return AdjustedVectorData{T}(id = id)
+function Base.setindex!(parameter::AdjustedVectorData{T}, value::T, i::Integer) where {T}
+    parameter.data[i] = value
+    return nothing
 end
 
 function Base.getindex(parameter::AdjustedVectorData{T}, i::Integer) where {T}

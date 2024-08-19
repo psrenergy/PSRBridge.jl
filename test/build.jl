@@ -26,7 +26,13 @@ function build_int(i::Integer)
     return i
 end
 
+function build_int(date_time::DateTime)
+    return Dates.month(date_time)
+end
+
 function build_database(path::AbstractString)
+    println("Building database")
+
     if isfile(path)
         rm(path; force = true)
     end

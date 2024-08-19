@@ -14,7 +14,7 @@ const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 const ITERATIONS = 10
 const THERMAL_PLANT_SIZE = 20
 const HYDRO_PLANT_SIZE = 20
-const DATE_TIMES = [DateTime(2025, month, 1) for month in 1:12]
+const DATE_TIMES = [DateTime(year, month, 1) for month in 1:12 for year in 2000:2030]
 
 include("build.jl")
 
@@ -29,6 +29,10 @@ include("build.jl")
     time_series_float::TimeSeriesData{Float64} = "time_series_float"
     time_series_int::TimeSeriesData{Int} = "time_series_int"
     time_series_bool::TimeSeriesData{Bool} = "time_series_bool"
+    
+    adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
+    adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
+    adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
 
     # bus_index::MapData = ("Bus", "id")
     # agent_index::MapData = ("Agent", "id")
@@ -42,7 +46,7 @@ function add_hydro_plant!(db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
-function adjust!(collection::HydroPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+function PSRBridge.adjust!(collection::HydroPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
@@ -57,6 +61,10 @@ end
     time_series_float::TimeSeriesData{Float64} = "time_series_float"
     time_series_int::TimeSeriesData{Int} = "time_series_int"
     time_series_bool::TimeSeriesData{Bool} = "time_series_bool"
+
+    adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
+    adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
+    adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
 end
 
 function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
@@ -64,7 +72,15 @@ function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
-function adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+function PSRBridge.adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+    size = length(collection)
+    
+    for i in 1:size
+        collection.adjusted_vector_float[i] = collections.thermal_plant.time_series_float[i] + collections.hydro_plant.time_series_float[i]
+        collection.adjusted_vector_int[i] = collections.thermal_plant.time_series_int[i] + collections.hydro_plant.time_series_int[i]
+        collection.adjusted_vector_bool[i] = collections.thermal_plant.time_series_bool[i] && collections.hydro_plant.time_series_bool[i]
+    end
+
     return nothing
 end
 
@@ -149,7 +165,7 @@ function test_all()
                 @test hydro_plant_time_series_int(inputs.collections.hydro_plant, i) == time_series_int
                 @test hydro_plant_time_series_int(inputs.collections, i) == time_series_int
                 @test hydro_plant_time_series_int(inputs, i) == time_series_int
-                
+
                 time_series_bool = build_bool(date_time)
                 @test hydro_plant_time_series_bool(inputs.collections.hydro_plant, i) == time_series_bool
                 @test hydro_plant_time_series_bool(inputs.collections, i) == time_series_bool
@@ -171,6 +187,21 @@ function test_all()
                 @test thermal_plant_time_series_bool(inputs.collections.thermal_plant, i) == time_series_bool
                 @test thermal_plant_time_series_bool(inputs.collections, i) == time_series_bool
                 @test thermal_plant_time_series_bool(inputs, i) == time_series_bool
+
+                adjusted_vector_float = build_float(date_time) + build_float(date_time)
+                @test thermal_plant_adjusted_vector_float(inputs.collections.thermal_plant, i) == adjusted_vector_float
+                @test thermal_plant_adjusted_vector_float(inputs.collections, i) == adjusted_vector_float
+                @test thermal_plant_adjusted_vector_float(inputs, i) == adjusted_vector_float
+
+                adjusted_vector_int = build_int(date_time) + build_int(date_time)
+                @test thermal_plant_adjusted_vector_int(inputs.collections.thermal_plant, i) == adjusted_vector_int
+                @test thermal_plant_adjusted_vector_int(inputs.collections, i) == adjusted_vector_int
+                @test thermal_plant_adjusted_vector_int(inputs, i) == adjusted_vector_int
+
+                adjusted_vector_bool = build_bool(date_time) && build_bool(date_time)
+                @test thermal_plant_adjusted_vector_bool(inputs.collections.thermal_plant, i) == adjusted_vector_bool
+                @test thermal_plant_adjusted_vector_bool(inputs.collections, i) == adjusted_vector_bool
+                @test thermal_plant_adjusted_vector_bool(inputs, i) == adjusted_vector_bool
             end
         end
     end
@@ -189,7 +220,7 @@ function test_all()
                 @test hydro_plant_time_series_int(inputs.collections.hydro_plant, i) == time_series_int
                 @test hydro_plant_time_series_int(inputs.collections, i) == time_series_int
                 @test hydro_plant_time_series_int(inputs, i) == time_series_int
-                
+
                 time_series_bool = build_bool(date_time)
                 @test hydro_plant_time_series_bool(inputs.collections.hydro_plant, i) == time_series_bool
                 @test hydro_plant_time_series_bool(inputs.collections, i) == time_series_bool
@@ -206,12 +237,11 @@ function test_all()
                 @test thermal_plant_time_series_int(inputs.collections.thermal_plant, i) == time_series_int
                 @test thermal_plant_time_series_int(inputs.collections, i) == time_series_int
                 @test thermal_plant_time_series_int(inputs, i) == time_series_int
-                
+
                 time_series_bool = build_bool(date_time)
                 @test thermal_plant_time_series_bool(inputs.collections.thermal_plant, i) == time_series_bool
                 @test thermal_plant_time_series_bool(inputs.collections, i) == time_series_bool
                 @test thermal_plant_time_series_bool(inputs, i) == time_series_bool
-
             end
         end
     end

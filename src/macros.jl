@@ -10,18 +10,16 @@ macro collection(expression)
         @capture(field, field_name_::field_type_ = constructor_) ||
             error("Expected field_name::field_type = constructor, got $field")
 
-        if field_name == :id
-            continue
-        end
-
         function_name = Symbol(name_snakecase, :_, field_name)
 
         if field_type == :String
+            description = "Get the value of the $field_name field from the $name collection."
+
             doc_string = 
 """
     $function_name($name_snakecase::$name)
 
-Get the value of the $field_name field from the $name collection.
+$description
 """
             push!(getters, quote
                 @doc $doc_string function $function_name($name_snakecase::$name)
@@ -33,11 +31,11 @@ Get the value of the $field_name field from the $name collection.
 """
     $function_name(collections::AbstractCollections)
 
-Get the value of the $field_name field from the $name collection.
+$description
 """            
             push!(getters, quote
                 @doc $doc_string function $function_name(collections::AbstractCollections)
-                    return collections.$name_snakecase.$field_name
+                    return $function_name(collections.$name_snakecase)
                 end
             end)
 
@@ -45,19 +43,21 @@ Get the value of the $field_name field from the $name collection.
 """
     $function_name(inputs::AbstractInputs)
 
-Get the value of the $field_name field from the $name collection.
+$description
 """                   
             push!(getters, quote
                 @doc $doc_string function $function_name(inputs::AbstractInputs)
-                    return inputs.collections.$name_snakecase.$field_name
+                    return $function_name(inputs.collections.$name_snakecase)
                 end
             end)
         else
+            description = "Get the value of the $field_name field from the $name collection at index i."
+
             doc_string = 
 """
     $function_name($name_snakecase::$name, i::Integer)
 
-Get the value of the $field_name field from the $name collection at index i.
+$description
 """             
             push!(getters, quote
                 @doc $doc_string function $function_name($name_snakecase::$name, i::Integer)
@@ -69,11 +69,11 @@ Get the value of the $field_name field from the $name collection at index i.
 """
     $function_name(collections::AbstractCollections, i::Integer)
 
-Get the value of the $field_name field from the $name collection at index i.
+$description
 """                
             push!(getters, quote
                 @doc $doc_string function $function_name(collections::AbstractCollections, i::Integer)
-                    return collections.$name_snakecase.$field_name[i]
+                    return $function_name(collections.$name_snakecase, i)
                 end
             end)
 
@@ -81,11 +81,11 @@ Get the value of the $field_name field from the $name collection at index i.
 """
     $function_name(inputs::AbstractInputs, i::Integer)
 
-Get the value of the $field_name field from the $name collection at index i.
+$description
 """         
             push!(getters, quote
                 @doc $doc_string function $function_name(inputs::AbstractInputs, i::Integer)
-                    return inputs.collections.$name_snakecase.$field_name[i]
+                    return $function_name(inputs.collections.$name_snakecase, i)
                 end
             end)
         end

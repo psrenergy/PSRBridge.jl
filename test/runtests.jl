@@ -14,21 +14,25 @@ const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
 const ITERATIONS = 10
 const THERMAL_PLANT_SIZE = 20
 const HYDRO_PLANT_SIZE = 20
-const DATE_TIMES = [DateTime(2025, month, 1) for month in 1:12]
+const DATE_TIMES = [DateTime(year, month, 1) for month in 1:12 for year in 2000:2005]
 
 include("build.jl")
 
 @collection @kwdef mutable struct HydroPlant <: AbstractCollection
     id::String = "HydroPlant"
-
     label::StaticVectorData{String} = "label"
-    initial_volume::StaticVectorData{Float64} = "initial_volume"
-    has_commitment::StaticVectorData{Bool} = "has_commitment"
 
-    existing::TimeSeriesData{Bool} = "existing"
-    max_generation::TimeSeriesData{Float64} = "max_generation"
+    static_vector_float::StaticVectorData{Float64} = "static_vector_float"
+    static_vector_int::StaticVectorData{Int} = "static_vector_int"
+    static_vector_bool::StaticVectorData{Bool} = "static_vector_bool"
 
-    # non_controllable_spillage::StaticVectorData{Bool} = "non_controllable_spillage"
+    time_series_float::TimeSeriesData{Float64} = "time_series_float"
+    time_series_int::TimeSeriesData{Int} = "time_series_int"
+    time_series_bool::TimeSeriesData{Bool} = "time_series_bool"
+
+    adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
+    adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
+    adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
 
     # bus_index::MapData = ("Bus", "id")
     # agent_index::MapData = ("Agent", "id")
@@ -42,26 +46,25 @@ function add_hydro_plant!(db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
-function adjust!(collection::HydroPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+function PSRBridge.adjust!(collection::HydroPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
 @collection @kwdef mutable struct ThermalPlant <: AbstractCollection
     id::String = "ThermalPlant"
-
     label::StaticVectorData{String} = "label"
-    shutdown_cost::StaticVectorData{Float64} = "shutdown_cost"
-    max_startups::StaticVectorData{Int} = "max_startups"
 
-    existing::TimeSeriesData{Bool} = "existing"
-    max_generation::TimeSeriesData{Float64} = "max_generation"
+    static_vector_float::StaticVectorData{Float64} = "static_vector_float"
+    static_vector_int::StaticVectorData{Int} = "static_vector_int"
+    static_vector_bool::StaticVectorData{Bool} = "static_vector_bool"
 
-    # has_commitment::StaticVectorData{Bool} = "has_commitment"
+    time_series_float::TimeSeriesData{Float64} = "time_series_float"
+    time_series_int::TimeSeriesData{Int} = "time_series_int"
+    time_series_bool::TimeSeriesData{Bool} = "time_series_bool"
 
-    # existing::TimeSeriesData{Bool} = "existing"
-    # min_generation::TimeSeriesData{Float64} = "min_generation"
-    # om_cost::TimeSeriesData{Float64} = "om_cost"
-    # startup_cost::TimeSeriesData{Float64} = "startup_cost"
+    adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
+    adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
+    adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
 end
 
 function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
@@ -69,7 +72,15 @@ function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
     return nothing
 end
 
-function adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+function PSRBridge.adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+    size = length(collection)
+
+    for i in 1:size
+        collection.adjusted_vector_float[i] = collections.thermal_plant.time_series_float[i] + collections.hydro_plant.time_series_float[i]
+        collection.adjusted_vector_int[i] = collections.thermal_plant.time_series_int[i] + collections.hydro_plant.time_series_int[i]
+        collection.adjusted_vector_bool[i] = collections.thermal_plant.time_series_bool[i] && collections.hydro_plant.time_series_bool[i]
+    end
+
     return nothing
 end
 
@@ -94,21 +105,29 @@ function test_all()
 
     @timeit "initialize!" initialize!(inputs)
 
+    @test thermal_plant_id(inputs) == "ThermalPlant"
+    @test hydro_plant_id(inputs) == "HydroPlant"
+
     for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)
         @test hydro_plant_label(inputs.collections.hydro_plant, i) == label
         @test hydro_plant_label(inputs.collections, i) == label
         @test hydro_plant_label(inputs, i) == label
 
-        initial_volume = build_initial_volume(i)
-        @test hydro_plant_initial_volume(inputs.collections.hydro_plant, i) == initial_volume
-        @test hydro_plant_initial_volume(inputs.collections, i) == initial_volume
-        @test hydro_plant_initial_volume(inputs, i) == initial_volume
+        static_vector_float = build_float(i)
+        @test hydro_plant_static_vector_float(inputs.collections.hydro_plant, i) == static_vector_float
+        @test hydro_plant_static_vector_float(inputs.collections, i) == static_vector_float
+        @test hydro_plant_static_vector_float(inputs, i) == static_vector_float
 
-        has_commitment = build_has_commitment(i)
-        @test hydro_plant_has_commitment(inputs.collections.hydro_plant, i) == has_commitment
-        @test hydro_plant_has_commitment(inputs.collections, i) == has_commitment
-        @test hydro_plant_has_commitment(inputs, i) == has_commitment
+        static_vector_int = build_int(i)
+        @test hydro_plant_static_vector_int(inputs.collections.hydro_plant, i) == static_vector_int
+        @test hydro_plant_static_vector_int(inputs.collections, i) == static_vector_int
+        @test hydro_plant_static_vector_int(inputs, i) == static_vector_int
+
+        static_vector_bool = build_bool(i)
+        @test hydro_plant_static_vector_bool(inputs.collections.hydro_plant, i) == static_vector_bool
+        @test hydro_plant_static_vector_bool(inputs.collections, i) == static_vector_bool
+        @test hydro_plant_static_vector_bool(inputs, i) == static_vector_bool
     end
 
     for i in 1:THERMAL_PLANT_SIZE
@@ -117,15 +136,20 @@ function test_all()
         @test thermal_plant_label(inputs.collections, i) == label
         @test thermal_plant_label(inputs, i) == label
 
-        shutdown_cost = build_shutdown_cost(i)
-        @test thermal_plant_shutdown_cost(inputs.collections.thermal_plant, i) == shutdown_cost
-        @test thermal_plant_shutdown_cost(inputs.collections, i) == shutdown_cost
-        @test thermal_plant_shutdown_cost(inputs, i) == shutdown_cost
+        static_vector_float = build_float(i)
+        @test thermal_plant_static_vector_float(inputs.collections.thermal_plant, i) == static_vector_float
+        @test thermal_plant_static_vector_float(inputs.collections, i) == static_vector_float
+        @test thermal_plant_static_vector_float(inputs, i) == static_vector_float
 
-        max_startups = build_max_startups(i)
-        @test thermal_plant_max_startups(inputs.collections.thermal_plant, i) == max_startups
-        @test thermal_plant_max_startups(inputs.collections, i) == max_startups
-        @test thermal_plant_max_startups(inputs, i) == max_startups
+        static_vector_int = build_int(i)
+        @test thermal_plant_static_vector_int(inputs.collections.thermal_plant, i) == static_vector_int
+        @test thermal_plant_static_vector_int(inputs.collections, i) == static_vector_int
+        @test thermal_plant_static_vector_int(inputs, i) == static_vector_int
+
+        static_vector_bool = build_bool(i)
+        @test thermal_plant_static_vector_bool(inputs.collections.thermal_plant, i) == static_vector_bool
+        @test thermal_plant_static_vector_bool(inputs.collections, i) == static_vector_bool
+        @test thermal_plant_static_vector_bool(inputs, i) == static_vector_bool
     end
 
     @show Base.doc(thermal_plant_label)
@@ -135,27 +159,52 @@ function test_all()
             @timeit "not cached - update!" update!(inputs, date_time = date_time)
 
             for i in 1:HYDRO_PLANT_SIZE
-                existing = build_existing(date_time)
-                @test hydro_plant_existing(inputs.collections.hydro_plant, i) == existing
-                @test hydro_plant_existing(inputs.collections, i) == existing
-                @test hydro_plant_existing(inputs, i) == existing
+                time_series_float = build_float(date_time)
+                @test hydro_plant_time_series_float(inputs.collections.hydro_plant, i) == time_series_float
+                @test hydro_plant_time_series_float(inputs.collections, i) == time_series_float
+                @test hydro_plant_time_series_float(inputs, i) == time_series_float
 
-                max_generation = build_max_generation(date_time)
-                @test hydro_plant_max_generation(inputs.collections.hydro_plant, i) == max_generation
-                @test hydro_plant_max_generation(inputs.collections, i) == max_generation
-                @test hydro_plant_max_generation(inputs, i) == max_generation
+                time_series_int = build_int(date_time)
+                @test hydro_plant_time_series_int(inputs.collections.hydro_plant, i) == time_series_int
+                @test hydro_plant_time_series_int(inputs.collections, i) == time_series_int
+                @test hydro_plant_time_series_int(inputs, i) == time_series_int
+
+                time_series_bool = build_bool(date_time)
+                @test hydro_plant_time_series_bool(inputs.collections.hydro_plant, i) == time_series_bool
+                @test hydro_plant_time_series_bool(inputs.collections, i) == time_series_bool
+                @test hydro_plant_time_series_bool(inputs, i) == time_series_bool
             end
 
             for i in 1:THERMAL_PLANT_SIZE
-                existing = build_existing(date_time)
-                @test thermal_plant_existing(inputs.collections.thermal_plant, i) == existing
-                @test thermal_plant_existing(inputs.collections, i) == existing
-                @test thermal_plant_existing(inputs, i) == existing
+                time_series_float = build_float(date_time)
+                @test thermal_plant_time_series_float(inputs.collections.thermal_plant, i) == time_series_float
+                @test thermal_plant_time_series_float(inputs.collections, i) == time_series_float
+                @test thermal_plant_time_series_float(inputs, i) == time_series_float
 
-                max_generation = build_max_generation(date_time)
-                @test thermal_plant_max_generation(inputs.collections.thermal_plant, i) == max_generation
-                @test thermal_plant_max_generation(inputs.collections, i) == max_generation
-                @test thermal_plant_max_generation(inputs, i) == max_generation
+                time_series_int = build_int(date_time)
+                @test thermal_plant_time_series_int(inputs.collections.thermal_plant, i) == time_series_int
+                @test thermal_plant_time_series_int(inputs.collections, i) == time_series_int
+                @test thermal_plant_time_series_int(inputs, i) == time_series_int
+
+                time_series_bool = build_bool(date_time)
+                @test thermal_plant_time_series_bool(inputs.collections.thermal_plant, i) == time_series_bool
+                @test thermal_plant_time_series_bool(inputs.collections, i) == time_series_bool
+                @test thermal_plant_time_series_bool(inputs, i) == time_series_bool
+
+                adjusted_vector_float = build_float(date_time) + build_float(date_time)
+                @test thermal_plant_adjusted_vector_float(inputs.collections.thermal_plant, i) == adjusted_vector_float
+                @test thermal_plant_adjusted_vector_float(inputs.collections, i) == adjusted_vector_float
+                @test thermal_plant_adjusted_vector_float(inputs, i) == adjusted_vector_float
+
+                adjusted_vector_int = build_int(date_time) + build_int(date_time)
+                @test thermal_plant_adjusted_vector_int(inputs.collections.thermal_plant, i) == adjusted_vector_int
+                @test thermal_plant_adjusted_vector_int(inputs.collections, i) == adjusted_vector_int
+                @test thermal_plant_adjusted_vector_int(inputs, i) == adjusted_vector_int
+
+                adjusted_vector_bool = build_bool(date_time) && build_bool(date_time)
+                @test thermal_plant_adjusted_vector_bool(inputs.collections.thermal_plant, i) == adjusted_vector_bool
+                @test thermal_plant_adjusted_vector_bool(inputs.collections, i) == adjusted_vector_bool
+                @test thermal_plant_adjusted_vector_bool(inputs, i) == adjusted_vector_bool
             end
         end
     end
@@ -165,27 +214,37 @@ function test_all()
             @timeit "cached - update!" update!(inputs, cache, date_time = date_time)
 
             for i in 1:HYDRO_PLANT_SIZE
-                existing = build_existing(date_time)
-                @test hydro_plant_existing(inputs.collections.hydro_plant, i) == existing
-                @test hydro_plant_existing(inputs.collections, i) == existing
-                @test hydro_plant_existing(inputs, i) == existing
+                time_series_float = build_float(date_time)
+                @test hydro_plant_time_series_float(inputs.collections.hydro_plant, i) == time_series_float
+                @test hydro_plant_time_series_float(inputs.collections, i) == time_series_float
+                @test hydro_plant_time_series_float(inputs, i) == time_series_float
 
-                max_generation = build_max_generation(date_time)
-                @test hydro_plant_max_generation(inputs.collections.hydro_plant, i) == max_generation
-                @test hydro_plant_max_generation(inputs.collections, i) == max_generation
-                @test hydro_plant_max_generation(inputs, i) == max_generation
+                time_series_int = build_int(date_time)
+                @test hydro_plant_time_series_int(inputs.collections.hydro_plant, i) == time_series_int
+                @test hydro_plant_time_series_int(inputs.collections, i) == time_series_int
+                @test hydro_plant_time_series_int(inputs, i) == time_series_int
+
+                time_series_bool = build_bool(date_time)
+                @test hydro_plant_time_series_bool(inputs.collections.hydro_plant, i) == time_series_bool
+                @test hydro_plant_time_series_bool(inputs.collections, i) == time_series_bool
+                @test hydro_plant_time_series_bool(inputs, i) == time_series_bool
             end
 
             for i in 1:THERMAL_PLANT_SIZE
-                existing = build_existing(date_time)
-                @test thermal_plant_existing(inputs.collections.thermal_plant, i) == existing
-                @test thermal_plant_existing(inputs.collections, i) == existing
-                @test thermal_plant_existing(inputs, i) == existing
+                time_series_float = build_float(date_time)
+                @test thermal_plant_time_series_float(inputs.collections.thermal_plant, i) == time_series_float
+                @test thermal_plant_time_series_float(inputs.collections, i) == time_series_float
+                @test thermal_plant_time_series_float(inputs, i) == time_series_float
 
-                max_generation = build_max_generation(date_time)
-                @test thermal_plant_max_generation(inputs.collections.thermal_plant, i) == max_generation
-                @test thermal_plant_max_generation(inputs.collections, i) == max_generation
-                @test thermal_plant_max_generation(inputs, i) == max_generation
+                time_series_int = build_int(date_time)
+                @test thermal_plant_time_series_int(inputs.collections.thermal_plant, i) == time_series_int
+                @test thermal_plant_time_series_int(inputs.collections, i) == time_series_int
+                @test thermal_plant_time_series_int(inputs, i) == time_series_int
+
+                time_series_bool = build_bool(date_time)
+                @test thermal_plant_time_series_bool(inputs.collections.thermal_plant, i) == time_series_bool
+                @test thermal_plant_time_series_bool(inputs.collections, i) == time_series_bool
+                @test thermal_plant_time_series_bool(inputs, i) == time_series_bool
             end
         end
     end

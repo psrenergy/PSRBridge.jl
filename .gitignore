@@ -25,3 +25,5 @@ docs/site/
 
 format/Manifest.toml
 revise/Manifest.toml
+
+*.sqlite

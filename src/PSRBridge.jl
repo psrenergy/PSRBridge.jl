@@ -29,6 +29,7 @@ export
 
 include("abstract.jl")
 include("data/adjusted_vector.jl")
+include("data/any.jl")
 include("data/map.jl")
 include("data/static_vector.jl")
 include("data/time_series.jl")

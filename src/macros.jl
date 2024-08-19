@@ -10,6 +10,10 @@ macro collection(expression)
         @capture(field, field_name_::field_type_ = constructor_) ||
             error("Expected field_name::field_type = constructor, got $field")
 
+        if String(field_name)[1] == '_'
+            continue
+        end
+
         function_name = Symbol(name_snakecase, :_, field_name)
 
         if field_type == :String

@@ -34,6 +34,8 @@ include("build.jl")
     adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
     adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
 
+    _internal_data::String = "internal_data"
+
     # bus_index::MapData = ("Bus", "id")
     # agent_index::MapData = ("Agent", "id")
     # gauging_station_index::MapData = ("GaugingStation", "id")
@@ -65,6 +67,8 @@ end
     adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
     adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
     adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
+
+    _internal_data::String = "internal_data"
 end
 
 function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
@@ -107,6 +111,9 @@ function test_all()
 
     @test thermal_plant_id(inputs) == "ThermalPlant"
     @test hydro_plant_id(inputs) == "HydroPlant"
+
+    @test_throws UndefVarError thermal_plant__internal_data(inputs)
+    @test_throws UndefVarError hydro_plant__internal_data(inputs)
 
     for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)

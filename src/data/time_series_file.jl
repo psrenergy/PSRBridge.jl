@@ -1,6 +1,6 @@
 @kwdef mutable struct TimeSeriesFileData <: AbstractData
     id::String
-    path::String
+    path::String = ""
 end
 
 function Base.convert(::Type{TimeSeriesFileData}, id::AbstractString)

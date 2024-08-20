@@ -19,6 +19,7 @@ export
     AdjustedVectorData,
     MapData,
     StaticVectorData,
+    TimeSeriesFileData,
     TimeSeriesVectorData,
     Cache,
     initialize!,

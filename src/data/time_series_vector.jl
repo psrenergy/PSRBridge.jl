@@ -1,4 +1,3 @@
-
 @kwdef mutable struct TimeSeriesVectorData{T} <: AbstractData
     id::String
     data::Vector{T} = []

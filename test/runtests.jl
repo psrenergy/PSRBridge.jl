@@ -115,6 +115,15 @@ function test_all()
     @test_throws UndefVarError thermal_plant__internal_data(inputs)
     @test_throws UndefVarError hydro_plant__internal_data(inputs)
 
+    @test length(inputs.collections.hydro_plant) == HYDRO_PLANT_SIZE
+    @test length(inputs.collections.thermal_plant) == THERMAL_PLANT_SIZE
+
+    @test number_of_hydro_plant(inputs.collections) == HYDRO_PLANT_SIZE
+    @test number_of_thermal_plant(inputs.collections) == THERMAL_PLANT_SIZE
+
+    @test number_of_hydro_plant(inputs) == HYDRO_PLANT_SIZE
+    @test number_of_thermal_plant(inputs) == THERMAL_PLANT_SIZE
+
     for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)
         @test hydro_plant_label(inputs.collections.hydro_plant, i) == label

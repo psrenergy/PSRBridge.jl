@@ -93,6 +93,26 @@ function getters_vector(;name::Symbol, name_snakecase::Symbol, function_name::Sy
     return getters
 end
 
+function getters_collection(; name_snakecase::Symbol)
+    getters = Expr[]
+
+    function_name = Symbol("number_of_", name_snakecase)
+
+    push!(getters, quote
+        function $function_name(collections::AbstractCollections)
+            return length(collections.$name_snakecase)
+        end
+    end)
+
+    push!(getters, quote
+        function $function_name(inputs::AbstractInputs)
+            return length(inputs.collections.$name_snakecase)
+        end
+    end)    
+
+    return getters
+end
+
 macro collection(expression)
     @capture(expression, @kwdef mutable struct name_ <: AbstractCollection fields__ end) ||
         error("Expected @collection @kwdef mutable struct name <: AbstractCollection fields... end, got $expression")
@@ -100,6 +120,10 @@ macro collection(expression)
     name_snakecase = Symbol(NamingConventions.convert(PascalCase, SnakeCase, string(name)))
 
     getters = Expr[]
+
+    push!(getters, 
+        getters_collection(name_snakecase = name_snakecase)...
+    )
 
     for field in fields
         @capture(field, field_name_::field_type_ = constructor_) ||

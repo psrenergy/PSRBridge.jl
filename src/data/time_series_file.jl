@@ -7,7 +7,7 @@ function Base.convert(::Type{TimeSeriesFileData}, id::AbstractString)
     return TimeSeriesFileData(id = id)
 end
 
-function Base.call(parameter::TimeSeriesFileData)
+function (parameter::TimeSeriesFileData)()
     return parameter.path
 end
 

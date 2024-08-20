@@ -16,7 +16,7 @@ macro collection(expression)
 
         function_name = Symbol(name_snakecase, :_, field_name)
 
-        if field_type == :String
+        if field_type == :String || field_type == :TimeSeriesFileData
             description = "Get the value of the $field_name field from the $name collection."
 
             doc_string = 

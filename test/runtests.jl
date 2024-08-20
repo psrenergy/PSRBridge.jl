@@ -118,11 +118,14 @@ function test_all()
     @test length(inputs.collections.hydro_plant) == HYDRO_PLANT_SIZE
     @test length(inputs.collections.thermal_plant) == THERMAL_PLANT_SIZE
 
-    @test number_of_hydro_plant(inputs.collections) == HYDRO_PLANT_SIZE
-    @test number_of_thermal_plant(inputs.collections) == THERMAL_PLANT_SIZE
+    @test hydro_plant_length(inputs.collections) == HYDRO_PLANT_SIZE
+    @test thermal_plant_length(inputs.collections) == THERMAL_PLANT_SIZE
 
-    @test number_of_hydro_plant(inputs) == HYDRO_PLANT_SIZE
-    @test number_of_thermal_plant(inputs) == THERMAL_PLANT_SIZE
+    @test hydro_plant_length(inputs) == HYDRO_PLANT_SIZE
+    @test thermal_plant_length(inputs) == THERMAL_PLANT_SIZE
+
+    @test hydro_plant_indices(inputs) == [i for i in 1:HYDRO_PLANT_SIZE]
+    @test thermal_plant_indices(inputs) == [i for i in 1:HYDRO_PLANT_SIZE]
 
     for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)

@@ -96,19 +96,27 @@ end
 function getters_collection(; name_snakecase::Symbol)
     getters = Expr[]
 
-    function_name = Symbol("number_of_", name_snakecase)
+    length_function_name = Symbol(name_snakecase, "_length")
 
     push!(getters, quote
-        function $function_name(collections::AbstractCollections)
+        function $length_function_name(collections::AbstractCollections)
             return length(collections.$name_snakecase)
         end
     end)
 
     push!(getters, quote
-        function $function_name(inputs::AbstractInputs)
+        function $length_function_name(inputs::AbstractInputs)
             return length(inputs.collections.$name_snakecase)
         end
-    end)    
+    end)
+
+    indices_function_name = Symbol(name_snakecase, "_indices")
+
+    push!(getters, quote
+        function $indices_function_name(inputs::AbstractInputs)
+            return collect(1:$length_function_name(inputs))
+        end
+    end)
 
     return getters
 end

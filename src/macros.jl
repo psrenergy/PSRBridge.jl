@@ -16,7 +16,7 @@ macro collection(expression)
 
         function_name = Symbol(name_snakecase, :_, field_name)
 
-        if field_type == :String || field_type == :TimeSeriesFileData
+        if field_type == :String
             description = "Get the value of the $field_name field from the $name collection."
 
             doc_string = 
@@ -54,6 +54,44 @@ $description
                     return $function_name(inputs.collections.$name_snakecase)
                 end
             end)
+        elseif field_type == :TimeSeriesFileData
+            description = "Get the value of the $field_name field from the $name collection."
+
+            doc_string = 
+"""
+    $function_name($name_snakecase::$name)
+
+$description
+"""
+            push!(getters, quote
+                @doc $doc_string function $function_name($name_snakecase::$name)
+                    return $name_snakecase.$field_name()
+                end
+            end)
+
+            doc_string = 
+"""
+    $function_name(collections::AbstractCollections)
+
+$description
+"""            
+            push!(getters, quote
+                @doc $doc_string function $function_name(collections::AbstractCollections)
+                    return $function_name(collections.$name_snakecase)
+                end
+            end)
+
+            doc_string = 
+"""
+    $function_name(inputs::AbstractInputs)
+
+$description
+"""                   
+            push!(getters, quote
+                @doc $doc_string function $function_name(inputs::AbstractInputs)
+                    return $function_name(inputs.collections.$name_snakecase)
+                end
+            end)            
         else
             description = "Get the value of the $field_name field from the $name collection at index i."
 

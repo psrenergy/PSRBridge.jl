@@ -26,9 +26,9 @@ include("build.jl")
     static_vector_int::StaticVectorData{Int} = "static_vector_int"
     static_vector_bool::StaticVectorData{Bool} = "static_vector_bool"
 
-    time_series_float::TimeSeriesData{Float64} = "time_series_float"
-    time_series_int::TimeSeriesData{Int} = "time_series_int"
-    time_series_bool::TimeSeriesData{Bool} = "time_series_bool"
+    time_series_float::TimeSeriesVectorData{Float64} = "time_series_float"
+    time_series_int::TimeSeriesVectorData{Int} = "time_series_int"
+    time_series_bool::TimeSeriesVectorData{Bool} = "time_series_bool"
 
     adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
     adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
@@ -60,9 +60,9 @@ end
     static_vector_int::StaticVectorData{Int} = "static_vector_int"
     static_vector_bool::StaticVectorData{Bool} = "static_vector_bool"
 
-    time_series_float::TimeSeriesData{Float64} = "time_series_float"
-    time_series_int::TimeSeriesData{Int} = "time_series_int"
-    time_series_bool::TimeSeriesData{Bool} = "time_series_bool"
+    time_series_float::TimeSeriesVectorData{Float64} = "time_series_float"
+    time_series_int::TimeSeriesVectorData{Int} = "time_series_int"
+    time_series_bool::TimeSeriesVectorData{Bool} = "time_series_bool"
 
     adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
     adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()

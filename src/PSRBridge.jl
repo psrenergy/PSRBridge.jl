@@ -19,7 +19,7 @@ export
     AdjustedVectorData,
     MapData,
     StaticVectorData,
-    TimeSeriesData,
+    TimeSeriesVectorData,
     Cache,
     initialize!,
     update!,
@@ -32,7 +32,8 @@ include("data/adjusted_vector.jl")
 include("data/any.jl")
 include("data/map.jl")
 include("data/static_vector.jl")
-include("data/time_series.jl")
+include("data/time_series_file.jl")
+include("data/time_series_vector.jl")
 include("collection.jl")
 include("collections.jl")
 include("inputs.jl")

@@ -30,15 +30,15 @@ function finalize!(cache::Cache)
     return nothing
 end
 
-function format_value(value::Any)
+function format_value(value::Any)::String
     return "$value"
 end
 
-function format_value(value::DateTime)
+function format_value(value::DateTime)::String
     return Dates.format(value, "yyyymmddHHMMSS")
 end
 
-function build_filename(kwargs...)
+function build_key(kwargs...)
     dict = Dict(kwargs)
     sorted = sort(collect(dict), by = x -> x[1])
 
@@ -51,9 +51,8 @@ function build_filename(kwargs...)
     return join(vector, "-") * ".bin"
 end
 
-function update!(inputs::AbstractInputs, cache::Cache; kwargs...)
-    filename = build_filename(kwargs...)
-    path = joinpath(cache.path, filename)
+function update!(inputs::AbstractInputs, cache::Cache, key::AbstractString; kwargs...)
+    path = joinpath(cache.path, "$key.bin")
 
     if isfile(path)
         if cache.verbose

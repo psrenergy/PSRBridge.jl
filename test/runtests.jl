@@ -230,7 +230,8 @@ function test_all()
 
     for _ in 1:ITERATIONS
         for date_time in DATE_TIMES
-            @timeit "cached - update!" update!(inputs, cache, date_time = date_time)
+            key = Dates.format(date_time, "yyyymmdd")
+            @timeit "cached - update!" update!(inputs, cache, key; date_time = date_time)
 
             for i in 1:HYDRO_PLANT_SIZE
                 time_series_float = build_float(date_time)

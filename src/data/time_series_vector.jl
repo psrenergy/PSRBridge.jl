@@ -26,18 +26,16 @@ end
 function update!(parameter::TimeSeriesVectorData{T}, collection::AbstractCollection, db::DatabaseSQLite; kwargs...) where {T}
     dict = Dict(kwargs)
 
-    if !haskey(dict, :date_time)
-        error("Missing date_time in kwargs")
+    if haskey(dict, :date_time)
+        date_time = dict[:date_time]
+
+        parameter.data = PSRDatabaseSQLite.read_time_series_row(
+            db,
+            collection.id,
+            parameter.id;
+            date_time = date_time,
+        )
     end
-
-    date_time = dict[:date_time]
-
-    parameter.data = PSRDatabaseSQLite.read_time_series_row(
-        db,
-        collection.id,
-        parameter.id;
-        date_time = date_time,
-    )
 
     return nothing
 end

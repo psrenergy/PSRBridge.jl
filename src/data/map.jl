@@ -21,9 +21,7 @@ function Base.isempty(parameter::MapData)
 end
 
 function initialize!(parameter::MapData, collection::AbstractCollection, db::DatabaseSQLite; kwargs...)
-    collection_from = collection.id
-    collection_to = parameter.collection_to
-    parameter.data = PSRI.get_map(db, collection_from, collection_to, parameter.id)
+    parameter.data = PSRI.get_map(db, collection.id, parameter.collection_to, parameter.id)
     return nothing
 end
 

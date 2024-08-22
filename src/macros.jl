@@ -6,10 +6,10 @@ $description
 """
 end
 
-function getters_string(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
+function getters_field(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
     getters = Expr[]
 
-    description = "Get the value of the $field_name field from the $name collection."
+    description = "Get the $field_name field from the $name collection."
 
     doc_string = build_doc_string("$function_name($name_snakecase::$name)", description)
     push!(getters, quote
@@ -38,7 +38,7 @@ end
 function getters_callable(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
     getters = Expr[]
 
-    description = "Get the value of the $field_name field from the $name collection."
+    description = "Get the $field_name field from the $name collection."
 
     doc_string = build_doc_string("$function_name($name_snakecase::$name)", description)
     push!(getters, quote
@@ -64,10 +64,10 @@ function getters_callable(;name::Symbol, name_snakecase::Symbol, function_name::
     return getters
 end
 
-function getters_vector(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
+function getters_array1(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
     getters = Expr[]
 
-    description = "Get the value of the $field_name field from the $name collection at index i."
+    description = "Get the $field_name field from the $name collection at index i."
 
     doc_string = build_doc_string("$function_name($name_snakecase::$name, i::Integer)", description)
     push!(getters, quote
@@ -143,17 +143,17 @@ macro collection(expression)
 
         function_name = Symbol(name_snakecase, :_, field_name)
 
-        if field_type == :String
-            push!(getters, 
-                getters_string(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
-            )
-        elseif field_type == :TimeSeriesFileData
+        push!(getters,
+            getters_field(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
+        )
+
+        if field_type == :TimeSeriesFileData
             push!(getters, 
                 getters_callable(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
             )
         else
             push!(getters, 
-                getters_vector(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
+                getters_array1(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
             )
         end
     end

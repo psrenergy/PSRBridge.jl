@@ -127,6 +127,16 @@ function test_all()
     @test hydro_plant_indices(inputs) == [i for i in 1:HYDRO_PLANT_SIZE]
     @test thermal_plant_indices(inputs) == [i for i in 1:HYDRO_PLANT_SIZE]
 
+    labels = [build_hydro_plant_label(i) for i in 1:HYDRO_PLANT_SIZE]
+    @test hydro_plant_label(inputs.collections.hydro_plant) == labels
+    @test hydro_plant_label(inputs.collections) == labels
+    @test hydro_plant_label(inputs) == labels
+
+    labels = [build_thermal_plant_label(i) for i in 1:THERMAL_PLANT_SIZE]
+    @test thermal_plant_label(inputs.collections.thermal_plant) == labels
+    @test thermal_plant_label(inputs.collections) == labels
+    @test thermal_plant_label(inputs) == labels
+
     for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)
         @test hydro_plant_label(inputs.collections.hydro_plant, i) == label

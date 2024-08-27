@@ -19,6 +19,10 @@ function Base.isempty(parameter::TimeSeriesVectorData{T}) where {T}
     return isempty(parameter.data)
 end
 
+function raw_data(parameter::TimeSeriesVectorData)
+    return parameter.data
+end
+
 function initialize!(parameter::TimeSeriesVectorData{T}, collection::AbstractCollection, db::DatabaseSQLite; kwargs...) where {T}
     return nothing
 end

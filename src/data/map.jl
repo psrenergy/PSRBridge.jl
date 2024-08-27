@@ -20,6 +20,10 @@ function Base.isempty(parameter::MapData)
     return isempty(parameter.data)
 end
 
+function raw_data(parameter::MapData)
+    return parameter.data
+end
+
 function initialize!(parameter::MapData, collection::AbstractCollection, db::DatabaseSQLite; kwargs...)
     parameter.data = PSRI.get_map(db, collection.id, parameter.collection_to, parameter.id)
     return nothing

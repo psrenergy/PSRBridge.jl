@@ -19,6 +19,10 @@ function Base.isempty(parameter::AdjustedVectorData{T}) where {T}
     return isempty(parameter.data)
 end
 
+function raw_data(parameter::AdjustedVectorData)
+    return parameter.data
+end
+
 function initialize!(parameter::AdjustedVectorData{T}, collection::AbstractCollection, db::DatabaseSQLite; kwargs...) where {T}
     size = PSRI.max_elements(db, collection.id)
     parameter.data = Vector{T}(undef, size)

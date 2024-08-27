@@ -1,3 +1,7 @@
+function raw_data(parameter::Any)
+    return parameter
+end
+
 function initialize!(parameter::Any, collection::AbstractCollection, db::DatabaseSQLite; kwargs...)
     return nothing
 end

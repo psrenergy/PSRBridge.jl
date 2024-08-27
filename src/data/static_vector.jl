@@ -19,6 +19,10 @@ function Base.isempty(parameter::StaticVectorData{T}) where {T}
     return isempty(parameter.data)
 end
 
+function raw_data(parameter::StaticVectorData)
+    return parameter.data
+end
+
 function initialize!(parameter::StaticVectorData{T}, collection::AbstractCollection, db::DatabaseSQLite; kwargs...) where {T}
     parameter.data = PSRI.get_parms(db, collection.id, parameter.id) .|> T
     return nothing

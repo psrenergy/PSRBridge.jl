@@ -22,6 +22,7 @@ export
     TimeSeriesFileData,
     TimeSeriesVectorData,
     Cache,
+    raw_data,
     initialize!,
     update!,
     adjust!,

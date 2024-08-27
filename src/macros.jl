@@ -6,7 +6,7 @@ $description
 """
 end
 
-function getters_field(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
+function getters_field(; name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
     getters = Expr[]
 
     description = "Get the $field_name field from the $name collection."
@@ -14,7 +14,7 @@ function getters_field(;name::Symbol, name_snakecase::Symbol, function_name::Sym
     doc_string = build_doc_string("$function_name($name_snakecase::$name)", description)
     push!(getters, quote
         @doc $doc_string function $function_name($name_snakecase::$name)
-            return $name_snakecase.$field_name
+            return raw_data($name_snakecase.$field_name)
         end
     end)
 
@@ -35,7 +35,7 @@ function getters_field(;name::Symbol, name_snakecase::Symbol, function_name::Sym
     return getters
 end
 
-function getters_callable(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
+function getters_callable(; name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
     getters = Expr[]
 
     description = "Get the $field_name field from the $name collection."
@@ -64,7 +64,7 @@ function getters_callable(;name::Symbol, name_snakecase::Symbol, function_name::
     return getters
 end
 
-function getters_array1(;name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
+function getters_array1(; name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
     getters = Expr[]
 
     description = "Get the $field_name field from the $name collection at index i."
@@ -129,8 +129,8 @@ macro collection(expression)
 
     getters = Expr[]
 
-    push!(getters, 
-        getters_collection(name_snakecase = name_snakecase)...
+    push!(getters,
+        getters_collection(name_snakecase = name_snakecase)...,
     )
 
     for field in fields
@@ -144,16 +144,16 @@ macro collection(expression)
         function_name = Symbol(name_snakecase, :_, field_name)
 
         push!(getters,
-            getters_field(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
+            getters_field(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...,
         )
 
         if field_type == :TimeSeriesFileData
-            push!(getters, 
-                getters_callable(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
+            push!(getters,
+                getters_callable(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...,
             )
         else
-            push!(getters, 
-                getters_array1(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...
+            push!(getters,
+                getters_array1(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...,
             )
         end
     end

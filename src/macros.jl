@@ -11,9 +11,9 @@ function getters_field(; name::Symbol, name_snakecase::Symbol, function_name::Sy
 
     description = "Get the $field_name field from the $name collection."
 
-    doc_string = build_doc_string("$function_name($name_snakecase::$name)", description)
+    doc_string = build_doc_string("$function_name($name_snakecase::AbstractCollection)", description)
     push!(getters, quote
-        @doc $doc_string function $function_name($name_snakecase::$name)
+        @doc $doc_string function $function_name($name_snakecase::AbstractCollection)
             return raw_data($name_snakecase.$field_name)
         end
     end)
@@ -40,9 +40,9 @@ function getters_callable(; name::Symbol, name_snakecase::Symbol, function_name:
 
     description = "Get the $field_name field from the $name collection."
 
-    doc_string = build_doc_string("$function_name($name_snakecase::$name)", description)
+    doc_string = build_doc_string("$function_name($name_snakecase::AbstractCollection)", description)
     push!(getters, quote
-        @doc $doc_string function $function_name($name_snakecase::$name)
+        @doc $doc_string function $function_name($name_snakecase::AbstractCollection)
             return $name_snakecase.$field_name()
         end
     end)
@@ -69,9 +69,9 @@ function getters_array1(; name::Symbol, name_snakecase::Symbol, function_name::S
 
     description = "Get the $field_name field from the $name collection at index i."
 
-    doc_string = build_doc_string("$function_name($name_snakecase::$name, i::Integer)", description)
+    doc_string = build_doc_string("$function_name($name_snakecase::AbstractCollection, i::Integer)", description)
     push!(getters, quote
-        @doc $doc_string function $function_name($name_snakecase::$name, i::Integer)
+        @doc $doc_string function $function_name($name_snakecase::AbstractCollection, i::Integer)
             return $name_snakecase.$field_name[i]
         end
     end)

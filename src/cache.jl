@@ -3,18 +3,10 @@ struct Cache
     path::String
 
     function Cache(; verbose::Bool = false)
-        path = joinpath(tempdir(), randstring(16))
-
-        if isdir(path)
-            rm(path; recursive = true)
-        end
-
+        path = mktempdir()
         if verbose
             println("Initialize cache: $path")
         end
-
-        mkdir(path)
-
         return new(verbose, path)
     end
 end
@@ -31,7 +23,7 @@ function finalize!(cache::Cache)
 end
 
 function format_value(value::Any)::String
-    return "$value"
+    return string(value)
 end
 
 function format_value(value::DateTime)::String

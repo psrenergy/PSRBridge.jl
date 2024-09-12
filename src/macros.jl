@@ -9,7 +9,7 @@ end
 function getters_field(; name::Symbol, name_snakecase::Symbol, function_name::Symbol, field_name::Symbol)
     getters = Expr[]
 
-    description = "Get the $field_name field from the $name collection."
+    description = "Get the `$field_name` field from the `$name` collection."
 
     doc_string = build_doc_string("$function_name($name_snakecase::AbstractCollection)", description)
     push!(getters, quote

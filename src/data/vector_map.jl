@@ -33,7 +33,7 @@ function raw_data(parameter::VectorMapData)
 end
 
 function initialize!(parameter::VectorMapData, collection::AbstractCollection, db::DatabaseSQLite; kwargs...)
-    parameter.data = PSRI.get_vector_map(inputs.db, collection.id, parameter.collection_to, parameter.id)
+    parameter.data = PSRI.get_vector_map(db, collection.id, parameter.collection_to, parameter.id)
     return nothing
 end
 

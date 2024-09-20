@@ -24,6 +24,10 @@ function Base.iterate(parameter::MapData)
     return iterate(parameter.data)
 end
 
+function Base.iterate(parameter::PSRBridge.MapData, i::Integer)
+    return iterate(parameter.data, i)
+end
+
 function raw_data(parameter::MapData)
     return parameter.data
 end

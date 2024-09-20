@@ -1,4 +1,4 @@
-@kwdef mutable struct MapData <: AbstractData
+@kwdef mutable struct VectorMapData <: AbstractData
     collection_to::String
     id::String
     data::Vector{Vector{Int}} = []

@@ -20,6 +20,10 @@ function Base.isempty(parameter::MapData)
     return isempty(parameter.data)
 end
 
+function iterate(parameter::MapData)
+    return iterate(parameter.data)
+end
+
 function raw_data(parameter::MapData)
     return parameter.data
 end

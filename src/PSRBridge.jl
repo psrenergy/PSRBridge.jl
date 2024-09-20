@@ -18,6 +18,7 @@ export
     AbstractData,
     AdjustedVectorData,
     MapData,
+    VectorMapData,
     StaticVectorData,
     TimeSeriesFileData,
     TimeSeriesVectorData,

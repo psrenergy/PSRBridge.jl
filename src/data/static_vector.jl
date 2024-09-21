@@ -19,6 +19,10 @@ function Base.isempty(parameter::StaticVectorData{T}) where {T}
     return isempty(parameter.data)
 end
 
+function Base.iterate(parameter::StaticVectorData)
+    return iterate(parameter.data)
+end
+
 function raw_data(parameter::StaticVectorData)
     return parameter.data
 end

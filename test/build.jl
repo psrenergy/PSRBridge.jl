@@ -109,7 +109,7 @@ function build_database(path::AbstractString)
     PSRI.link_series_to_file(
         db,
         "HydroPlant";
-        time_series_file = build_thermal_plant_file(),
+        time_series_file = build_hydro_plant_file(),
     )
 
     PSRDatabaseSQLite.close!(db)

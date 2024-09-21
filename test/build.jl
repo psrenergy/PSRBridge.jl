@@ -1,3 +1,13 @@
+function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
+    PSRI.create_element!(db, "ThermalPlant"; kwargs...)
+    return nothing
+end
+
+function add_hydro_plant!(db::DatabaseSQLite; kwargs...)
+    PSRI.create_element!(db, "HydroPlant"; kwargs...)
+    return nothing
+end
+
 function build_thermal_plant_label(i::Integer)
     return "Thermal Plant $i"
 end
@@ -28,6 +38,14 @@ end
 
 function build_int(date_time::DateTime)
     return Dates.month(date_time)
+end
+
+function build_thermal_plant_file()
+    return "thermal_plant_file"
+end
+
+function build_hydro_plant_file()
+    return "hydro_plant_file"
 end
 
 function build_database(path::AbstractString)
@@ -67,6 +85,12 @@ function build_database(path::AbstractString)
         )
     end
 
+    PSRI.link_series_to_file(
+        db,
+        "ThermalPlant";
+        time_series_file = build_thermal_plant_file(),
+    )
+
     for i in 1:HYDRO_PLANT_SIZE
         add_hydro_plant!(db;
             label = build_hydro_plant_label(i),
@@ -81,6 +105,12 @@ function build_database(path::AbstractString)
             ),
         )
     end
+
+    PSRI.link_series_to_file(
+        db,
+        "HydroPlant";
+        time_series_file = build_thermal_plant_file(),
+    )
 
     PSRDatabaseSQLite.close!(db)
 

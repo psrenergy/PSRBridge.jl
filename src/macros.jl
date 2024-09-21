@@ -147,11 +147,7 @@ macro collection(expression)
             getters_field(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...,
         )
 
-        if field_type == :TimeSeriesFileData
-            push!(getters,
-                getters_callable(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...,
-            )
-        else
+        if field_type != :TimeSeriesFileData
             push!(getters,
                 getters_array1(name = name, name_snakecase = name_snakecase, function_name = function_name, field_name = field_name)...,
             )

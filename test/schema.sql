@@ -24,6 +24,10 @@ CREATE TABLE HydroPlant_time_series_parameters (
     PRIMARY KEY (id, date_time)
 ) STRICT;
 
+CREATE TABLE HydroPlant_time_series_files (
+    time_series_file TEXT NOT NULL
+) STRICT;
+
 CREATE TABLE ThermalPlant (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     label TEXT UNIQUE NOT NULL,
@@ -40,4 +44,8 @@ CREATE TABLE ThermalPlant_time_series_parameters (
     time_series_bool INTEGER,
     FOREIGN KEY(id) REFERENCES ThermalPlant(id) ON DELETE CASCADE ON UPDATE CASCADE,
     PRIMARY KEY (id, date_time)
+) STRICT;
+
+CREATE TABLE ThermalPlant_time_series_files (
+    time_series_file TEXT NOT NULL
 ) STRICT;

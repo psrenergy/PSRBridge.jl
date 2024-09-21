@@ -29,6 +29,8 @@ include("build.jl")
     time_series_float::TimeSeriesVectorData{Float64} = "time_series_float"
     time_series_int::TimeSeriesVectorData{Int} = "time_series_int"
     time_series_bool::TimeSeriesVectorData{Bool} = "time_series_bool"
+    
+    time_series_file::TimeSeriesFileData = "time_series_file"
 
     adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
     adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
@@ -41,11 +43,6 @@ include("build.jl")
     # gauging_station_index::MapData = ("GaugingStation", "id")
     # turbine_to_index::MapData = ("HydroPlant", "turbine_to")
     # spill_to_index::MapData = ("HydroPlant", "spill_to")
-end
-
-function add_hydro_plant!(db::DatabaseSQLite; kwargs...)
-    PSRI.create_element!(db, "HydroPlant"; kwargs...)
-    return nothing
 end
 
 function PSRBridge.adjust!(collection::HydroPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
@@ -64,16 +61,13 @@ end
     time_series_int::TimeSeriesVectorData{Int} = "time_series_int"
     time_series_bool::TimeSeriesVectorData{Bool} = "time_series_bool"
 
+    time_series_file::TimeSeriesFileData = "time_series_file"
+
     adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()
     adjusted_vector_int::AdjustedVectorData{Int} = AdjustedVectorData{Int}()
     adjusted_vector_bool::AdjustedVectorData{Bool} = AdjustedVectorData{Bool}()
 
     _internal_data::String = "internal_data"
-end
-
-function add_thermal_plant!(db::DatabaseSQLite; kwargs...)
-    PSRI.create_element!(db, "ThermalPlant"; kwargs...)
-    return nothing
 end
 
 function PSRBridge.adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
@@ -136,6 +130,14 @@ function test_all()
     @test thermal_plant_label(inputs.collections.thermal_plant) == labels
     @test thermal_plant_label(inputs.collections) == labels
     @test thermal_plant_label(inputs) == labels
+
+    @test hydro_plant_time_series_file(inputs.collections.hydro_plant) == build_hydro_plant_file()
+    @test hydro_plant_time_series_file(inputs.collections) == build_hydro_plant_file()
+    @test hydro_plant_time_series_file(inputs) == build_hydro_plant_file()
+
+    @test thermal_plant_time_series_file(inputs.collections.thermal_plant) == build_thermal_plant_file()
+    @test thermal_plant_time_series_file(inputs.collections) == build_thermal_plant_file()
+    @test thermal_plant_time_series_file(inputs) == build_thermal_plant_file()
 
     for i in 1:HYDRO_PLANT_SIZE
         label = build_hydro_plant_label(i)

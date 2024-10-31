@@ -186,7 +186,7 @@ function test_bridge()
         @test thermal_plant_static_vector_bool(inputs, i) == static_vector_bool
     end
 
-    @show Base.doc(thermal_plant_label)
+    # @show Base.doc(thermal_plant_label)
 
     for _ in 1:ITERATIONS
         for date_time in DATE_TIMES

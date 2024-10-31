@@ -5,6 +5,10 @@
 
 ## Introduction
 
+PSRBridge is a Julia package designed to facilitate seamless data integration between [PSR](https://www.psr-inc.com) models and the [PSRClassesInterface (PSRI)](https://github.com/psrenergy/PSRClassesInterface.jl) or any other database. As a "brother repository" to PSRI, PSRBridge builds on the foundational structure provided by the interface, enhancing it by organizing and managing data exchanges. The package enforces consistent data organization and provides caching options, enabling efficient data retrieval and management for large-scale or complex power system models.
+
+PSRBridge is particularly useful in scenarios where PSR models need to frequently access or update large datasets. By acting as an intermediary layer, it ensures data is handled systematically and optimally stored. With its robust data management features, PSRBridge significantly streamlines the data flow in power system simulations, making it easier to maintain and update models within Julia's powerful computational environment.
+
 ## Getting Started
 
 ### Installation

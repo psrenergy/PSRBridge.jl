@@ -32,7 +32,7 @@ include("build.jl")
     time_series_float::TimeSeriesVectorData{Float64} = "time_series_float"
     time_series_int::TimeSeriesVectorData{Int} = "time_series_int"
     time_series_bool::TimeSeriesVectorData{Bool} = "time_series_bool"
-    
+
     time_series_file::TimeSeriesFileData = "time_series_file"
 
     adjusted_vector_float::AdjustedVectorData{Float64} = AdjustedVectorData{Float64}()

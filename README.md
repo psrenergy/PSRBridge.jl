@@ -71,6 +71,21 @@ end
 end
 ```
 
+### Adjust Function
+
+```julia
+function PSRBridge.adjust!(collection::HydroPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+    return nothing
+end
+
+function PSRBridge.adjust!(collection::ThermalPlant, collections::AbstractCollections, db::DatabaseSQLite; kwargs...)
+    for i in 1:length(collection)
+        collection.adjusted_vector_float[i] = collections.thermal_plant.time_series_float[i] + collections.hydro_plant.time_series_float[i]
+    end
+    return nothing
+end
+```
+
 ### Initialization
 
 ```julia

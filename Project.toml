@@ -11,12 +11,23 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 
 [compat]
+Aqua = "0.7 - 0.8"
+DataFrames = "1.0 - 1.7"
+Dates = "1.9 - 1.11"
+MacroTools = "0.5"
+NamingConventions = "0.1.1"
+PSRClassesInterface = "0.17.2"
+Random = "1.9 - 1.11"
+Serialization = "1.9 - 1.11"
+Test = "1.9 - 1.11"
+TimerOutputs = "0.5"
 julia = "1.9"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 
 [targets]
-test = ["DataFrames", "Test", "TimerOutputs"]
+test = ["Aqua", "DataFrames", "Test", "TimerOutputs"]

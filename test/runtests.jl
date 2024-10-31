@@ -1,12 +1,14 @@
 using PSRBridge
 
+using Aqua
 using DataFrames
 using Dates
-import PSRClassesInterface as PSRI
 using Random
 using Serialization
 using Test
 using TimerOutputs
+
+import PSRClassesInterface as PSRI
 
 const PSRDatabaseSQLite = PSRI.PSRDatabaseSQLite
 const DatabaseSQLite = PSRI.PSRDatabaseSQLite.DatabaseSQLite
@@ -16,6 +18,7 @@ const THERMAL_PLANT_SIZE = 20
 const HYDRO_PLANT_SIZE = 20
 const DATE_TIMES = [DateTime(year, month, 1) for month in 1:12 for year in 2000:2005]
 
+include("aqua.jl")
 include("build.jl")
 
 @collection @kwdef mutable struct HydroPlant <: AbstractCollection
@@ -92,7 +95,7 @@ end
     collections::Collections = Collections()
 end
 
-function test_all()
+function test_bridge()
     path = joinpath(@__DIR__, "db.sqlite")
     build_database(path)
 
@@ -183,7 +186,7 @@ function test_all()
         @test thermal_plant_static_vector_bool(inputs, i) == static_vector_bool
     end
 
-    @show Base.doc(thermal_plant_label)
+    # @show Base.doc(thermal_plant_label)
 
     for _ in 1:ITERATIONS
         for date_time in DATE_TIMES
@@ -289,6 +292,18 @@ function test_all()
     PSRDatabaseSQLite.close!(db)
 
     rm(path)
+
+    return nothing
+end
+
+function test_all()
+    @testset "Aqua.jl" begin
+        test_aqua()
+    end
+
+    @testset "Bridge.jl" begin
+        test_bridge()
+    end
 
     return nothing
 end

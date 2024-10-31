@@ -11,6 +11,7 @@
 
 ```julia
 julia> ] add PSRBridge
+julia> ] add PSRClassesInterface
 ```
 
 ### Usage
